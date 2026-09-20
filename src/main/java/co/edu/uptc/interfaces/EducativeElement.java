@@ -10,4 +10,6 @@ package co.edu.uptc.interfaces;
 
 public interface EducativeElement {
     EducativeElementType getElementType();
+    String getId();
+    String getTitle();
 }

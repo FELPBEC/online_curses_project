@@ -51,8 +51,8 @@ public class Module implements EducativeElement{
      * 
      * @param id id del modulo
      */
-    public void setId(String id) {
-        this.id = id;
+    public void setId(int id) {
+        this.id = "MODULE-"+id;
     }
     /**Método para obtener el titulo del modulo
      * 
