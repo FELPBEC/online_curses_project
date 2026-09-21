@@ -37,7 +37,7 @@ public class CourseController {
      * @param title Título del nuevo curso
      */
     public void addCourse(String titleCourse){
-        int newIdCourse= getNextCourseIdNumber();
+        String newIdCourse= String.valueOf(getNextCourseIdNumber());
         Course newCourse= new Course();
         newCourse.setId(newIdCourse);
         newCourse.setTitle(titleCourse);
@@ -102,7 +102,7 @@ public class CourseController {
         }
         TreeNode<EducativeElement> parentNode = findNode(course.getRoot(), parentId);
         if (parentNode !=null) {
-            int newIdModule=getNextIdNumber(course.getRoot(), EducativeElementType.MODULO);
+            String newIdModule=String.valueOf(getNextIdNumber(course.getRoot(), EducativeElementType.MODULO));
             Module newModule= new Module();
             newModule.setId(newIdModule);
             newModule.setDescription(description);
@@ -198,7 +198,7 @@ public class CourseController {
         TreeNode<EducativeElement> parentNode = findNode(course.getRoot(), parentId);
         if (parentNode != null && parentNode.getData() != null && 
             parentNode.getData().getElementType() == EducativeElementType.MODULO) {
-            int newIdLesson = getNextIdNumber(course.getRoot(), EducativeElementType.LESSON);
+            String newIdLesson = String.valueOf(getNextIdNumber(course.getRoot(), EducativeElementType.LESSON));
             Lessons newLesson = new Lessons();
             newLesson.setId(newIdLesson);
             newLesson.setTitle(lessonTitle);

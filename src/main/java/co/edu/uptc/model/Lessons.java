@@ -58,7 +58,7 @@ public class Lessons implements EducativeElement{
      * 
      * @param id identificador de la lección
      */
-    public void setId(int id) {
+    public void setId(String id) {
         this.id ="LESSON-"+id;
     }
     /**Método para obtener el titulo de la lección

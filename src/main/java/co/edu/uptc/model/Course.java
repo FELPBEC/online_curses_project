@@ -50,7 +50,7 @@ public class Course implements EducativeElement{
         this.root = root;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
 
         this.id = "COURSE-"+id;
     }
