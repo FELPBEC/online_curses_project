@@ -2,7 +2,8 @@ package co.edu.uptc.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import co.edu.uptc.exceptions.InvalidFortmatException;
+import co.edu.uptc.exceptions.InvalidParentException;
 import co.edu.uptc.interfaces.EducativeElement;
 import co.edu.uptc.interfaces.EducativeElementType;
 import co.edu.uptc.interfaces.Repository;
@@ -141,7 +142,6 @@ public class CourseController {
     public boolean deleteModule(String courseId,String moduleId){
         Course course= findCourse(courseId);
         if (course==null) {
-            System.out.println("Error el curso no existe");// TODO: BORRAR: manejar en excepcion CourseNotFoundException
             return false;
         }
         Module deleteModule= findModule(courseId, moduleId);
@@ -207,8 +207,7 @@ public class CourseController {
             TreeNode<EducativeElement> newNode = new TreeNode<>(newLesson);
             parentNode.addSon(newNode);
         } else {
-            // TODO: Reemplazar por excepción (ej: InvalidParentException)
-            System.out.println("Error: El nodo padre debe ser un Módulo válido.");
+            throw new InvalidParentException("Error: El nodo padre debe ser un Módulo válido.");
         }
     }
     /**
@@ -308,8 +307,7 @@ public class CourseController {
                             maxId = currentNum;
                         }
                     } catch (NumberFormatException e) {
-                        // TODO: Reemplazar por excepción personalizada
-                        System.out.println("Error de formato en ID de curso: " + course.getId());
+                        throw new InvalidFortmatException("Error de formato en ID de curso: " + course.getId());
                     }
                 }
             }
@@ -336,8 +334,7 @@ public class CourseController {
                 try {
                     currentMax = Integer.parseInt(parts[parts.length - 1]);
                 } catch (NumberFormatException e) {
-                    // TODO: Reemplazar con el lanzamiento/manejo de una excepción personalizada (ej: InvalidIdFormatException)
-                    System.err.println("Error de formato en ID: '" + idStr + "'. Se debe implementar el manejo de excepción correspondiente.");
+                    throw new InvalidFortmatException("Error de formato en ID: '" + idStr + "'. Se debe implementar el manejo de excepción correspondiente.");
                 }
             }
         }

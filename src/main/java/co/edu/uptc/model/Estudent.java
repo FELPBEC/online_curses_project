@@ -60,6 +60,14 @@ public class Estudent extends User{
         return coursesProgress.get(idCourse);
 
     }
+    /**Método para actualizar la lección en la que va el estudiante a la siguiente
+     * 
+     * @param idCourse id del curso en donde se va a buscar
+     * @param idNextLesson id de la siguiente lección
+     */
+    public void goToNextLesson(String idCourse, String idNextLesson){
+        coursesProgress.put(idCourse, idNextLesson);
+    }
     
     
     

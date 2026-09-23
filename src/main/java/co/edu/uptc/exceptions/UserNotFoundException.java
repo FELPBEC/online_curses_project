@@ -6,8 +6,8 @@ package co.edu.uptc.exceptions;
  * @version v1.0
  * @since 20/09/2026
  */
-public class EstudentNotFoundException extends RuntimeException{
-    public EstudentNotFoundException(String message){
+public class UserNotFoundException extends RuntimeException{
+    public UserNotFoundException(String message){
         super(message);
     }
 }
