@@ -11,13 +11,14 @@ import co.edu.uptc.interfaces.EducativeElement;
 public class Course implements EducativeElement{
     private String id;
     private String title;
+    private String description;
     private TreeNode<EducativeElement> root;
     
     public Course() {
     }
     
     public Course(String id, String title, TreeNode<EducativeElement> root) {
-        this.id = id;
+        setId(id);
         this.title = title;
         this.root = root;
     }
@@ -57,6 +58,14 @@ public class Course implements EducativeElement{
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     

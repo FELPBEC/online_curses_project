@@ -32,7 +32,7 @@ public class Lessons implements EducativeElement{
      * @param duration duración de la lección
      */
     public Lessons(String id, String title,String description, double duration) {
-        this.id = id;
+        setId(id);
         this.description=description;
         this.title = title;
         this.duration= duration;
