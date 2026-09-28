@@ -1,0 +1,94 @@
+.fondo-cuaderno {
+    -fx-background-image: 
+        url("../images/fondoGeneral.png"),      
+        url("../images/fondoIzquierda.png"),  
+        url("../images/fondoSuperior.png"),    
+        url("../images/fondoEsquina.png"); 
+
+    -fx-background-repeat: 
+        repeat,       
+        repeat-y,     
+        repeat-x,     
+        no-repeat;    
+
+    -fx-background-position: 
+        left top, 
+        left top, 
+        left top, 
+        left top;
+}
+
+.boton-dibujado {
+    /* Ocultamos el diseño por defecto del botón */
+    -fx-background-color: transparent; 
+
+    /* Usamos border-image en lugar de background-image */
+    -fx-border-image-source: url("../images/botonSuelto.png");
+    
+   /* 1. El Corte: Unos 28px para atrapar el margen invisible (6px) + borde grueso + sombra */
+    -fx-border-image-slice: 28 28 28 28 fill;
+    
+    /* 2. El Grosor: Obliga a JavaFX a dibujar el borde con esos mismos 28px de espacio */
+   -fx-border-image-width: 15 28 15 28;
+    
+    -fx-border-image-repeat: stretch;
+    
+    /* 3. El Padding: Debe ser mayor al border-width para que el texto quede centrado en el área beige */
+    -fx-padding: 12 24 12 24;
+    
+    -fx-cursor: hand;
+    -fx-font-family: "System"; /* Cambia a tu fuente estilo 'marcador' si tienes una */
+    -fx-font-weight: bold;
+    -fx-text-fill: #000000;
+}
+
+/* Efecto hover ligero */
+.boton-dibujado:hover {
+    -fx-opacity: 0.9;
+}
+
+/* Estado presionado */
+.boton-dibujado:pressed {
+    -fx-border-image-source: url("../images/botonPresionado.png");
+    /* Modificamos el padding para empujar el texto hacia abajo y simular el clic físico */
+    -fx-padding: 16 20 8 28;
+}
+
+
+/* 1. CLASE BASE: Propiedades compartidas por TODAS las memofichas */
+.memoficha-base {
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-cursor: hand;
+    /* Ajustamos el padding para no pisar la esquina doblada */
+    -fx-padding: 30 40 20 20; 
+    
+    /* El mismo efecto de saltito al pasar el mouse */
+    -fx-transition: -fx-scale-x 0.2s, -fx-scale-y 0.2s;
+}
+.memoficha-base:hover {
+    -fx-scale-x: 1.03; 
+    -fx-scale-y: 1.03;
+}
+
+/* 2. CLASES DE COLORES: Normal y Presionado */
+.memo-verde { -fx-background-image: url("../images/plegableVerdeNormal.png"); }
+.memo-verde:pressed { -fx-background-image: url("../images/plegableVerdePresionado.png"); }
+
+.memo-azul { -fx-background-image: url("../images/plegableAzulNormal.png"); }
+.memo-azul:pressed { -fx-background-image: url("../images/plegableAzulPresionado.png"); }
+
+.memo-rosa { -fx-background-image: url("../images/plegableRosadoNormal.png"); }
+.memo-rosa:pressed { -fx-background-image: url("../images/plegableRosadoPresionado.png"); }
+
+.memo-amarillo { -fx-background-image: url("../images/plegableAmarilloNormal.png"); }
+.memo-amarillo:pressed { -fx-background-image: url("../images/plegableAmarilloPresionado.png"); }
+
+.memo-morado { -fx-background-image: url("../images/plegableMoradoNormal.png"); }
+.memo-morado:pressed { -fx-background-image: url("../images/plegableMoradoPresionado.png"); }
+
+.memo-naranja { -fx-background-image: url("../images/plegableNaranjaNormal.png"); }
+.memo-naranja:pressed { -fx-background-image: url("../images/plegableNaranjaPresionado.png"); }
+
+

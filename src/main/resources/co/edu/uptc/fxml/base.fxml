@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+
+<!-- 1. El StackPane raíz cubre toda la pantalla automáticamente -->
+<StackPane xmlns="http://javafx.com/javafx/17" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            stylesheets="@../styles/styles.css"
+            styleClass="fondo-cuaderno" 
+            prefHeight="600.0" prefWidth="800.0">
+            
+    <!-- 2. Tu VBox va dentro y organiza los elementos de la interfaz -->
+    <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20;">
+       <!-- El botón se ajustará automáticamente al texto sin deformar las esquinas -->
+    <Button text="Botón" styleClass="boton-dibujado" />
+    <Button text="Botón con texto más largo" styleClass="boton-dibujado" />
+    </VBox>
+    
+</StackPane>

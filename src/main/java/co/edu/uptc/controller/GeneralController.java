@@ -1,10 +1,14 @@
 package co.edu.uptc.controller;
 
+import co.edu.uptc.exceptions.NoAvaliableLessonsInTheCourseException;
 import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.exceptions.WrongPasswordException;
 import co.edu.uptc.model.Course;
 import co.edu.uptc.model.Estudent;
 import co.edu.uptc.model.Teacher;
+import co.edu.uptc.persistence.CoursesJsonRepository;
+import co.edu.uptc.persistence.EstudentJsonRepository;
+import co.edu.uptc.persistence.TeacherJsonRepository;
 /**Clase controlador maestro que sirve de enlace para los 3 controladores principales y las vistas
  * Define además propiedades globales del sístema como:
  * El actual estudiante logueado
@@ -28,11 +32,10 @@ public class GeneralController {
      * @param estudentController controlador de estudiantes
      * @param teacherController controlador de profesores
      */
-    public GeneralController(CourseController courseController, EstudentController estudentController,
-            TeacherController teacherController) {
-        this.courseController = courseController;
-        this.estudentController = estudentController;
-        this.teacherController = teacherController;
+    public GeneralController() {
+        this.courseController = new CourseController( new CoursesJsonRepository("Courses.json"));
+        this.estudentController = new EstudentController(new EstudentJsonRepository("Estudents.json"));
+        this.teacherController = new TeacherController(new TeacherJsonRepository("Teachers.json"));
         this.currentEstudent=null;
         this.currentTeacher=null;
         this.currentCourse=null;
@@ -81,7 +84,7 @@ public class GeneralController {
     }
     
 
-    //LÓGICA DE LOGIN
+    //LÓGICA DE LOGIN/Establecer los objetos actuales
     /**Método para loguearse como profesor 
      * y establecerlo como profesor actual
      * 
@@ -110,6 +113,46 @@ public class GeneralController {
             setCurrentEstudent(estudent);
         }
     }
+    /**Método que establece el curso actual según la id
+     * 
+     * @param idCourse id del curso: COR-1
+     */
+    public void setCurrentCourseById(String idCourse){
+        currentCourse=courseController.findCourse(idCourse);
+    }
+
+    //LÓGICA DE PROGRESO ENTRE CURSOS
+    /**Método para registrar al estudiante actual en el curso actual
+     * 
+     */
+    public void registerOnCourse(){
+        currentEstudent.registerCourse(currentCourse.getId(), courseController.getIdFirstLesson(currentCourse.getId()));
+    }
+    /**Método cuando se indica que se completo una lección y se pasa a la siguiente
+     * Se asigna la id de la siguiente lección en el Map del estudiante actual
+     * en caso de que no haya más lecciones, actualizará el estado del curso como completado
+     * 
+     */
+    public void goToNextLesson()throws NoAvaliableLessonsInTheCourseException{
+        String idCourse=currentCourse.getId();
+        String idCurrentLesson=currentEstudent.getCoursesProgress().get(idCourse).getIdLesson();
+        try {
+            String idNextLesson=courseController.getIdNextLesson(idCourse, idCurrentLesson);
+            currentEstudent.goToNextLesson(idCourse, idNextLesson);
+        } catch ( NoAvaliableLessonsInTheCourseException e) {
+            currentEstudent.completeCourse(idCourse);
+            throw e;
+        }
+    }
+    /**Método que envía el porcentaje de completado de las lecciones totales del curso
+     * 
+     * @return número de porcentaje de completado ej: 43,5
+     */
+    public double sendPercentLesson(){
+        String idCourse=currentCourse.getId();
+        String idCurrentLesson=currentEstudent.getCoursesProgress().get(idCourse).getIdLesson();
+        return courseController.getPercentOfLessonsComplete(idCourse, idCurrentLesson);
+    }
     
-    
+
 }
