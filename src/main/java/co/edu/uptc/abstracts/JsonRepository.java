@@ -25,25 +25,32 @@ public abstract class JsonRepository<T> implements Repository<T>{
     private Gson gson;
     private Type typeClass;
 
-    /**Método constructor de la clase JsonRepository
+    /**
+     * Constructor de la clase JsonRepository.
      * 
-     * @param filePath nombre del archivo tipo Json
-     * @param typeClass tipo de objeto que se almacenará en ese archivo
+     * @param filePath Nombre de archivo relativo o ruta absoluta del archivo JSON.
+     * @param typeClass Tipo de dato o token reflejado para la deserialización.
      */
     public JsonRepository(String filePath, Type typeClass) {
+        File fileInput = new File(filePath);
 
-        String rutaDeEjecucion = System.getProperty("user.dir");
-        File carpetaData = new File(rutaDeEjecucion, "../data");
-        // Si la carpeta "data" no existe junto al programa, la crea
-        if (!carpetaData.exists()) {
-            carpetaData.mkdirs(); 
+        // Si la ruta recibida ya es absoluta (ej: rutas temporales de JUnit @TempDir)
+        if (fileInput.isAbsolute()) {
+            this.filePath = fileInput.getAbsolutePath();
+        } else {
+            // Si es un nombre de archivo relativo (ej: "Courses.json"), se aloja en ../data
+            String rutaDeEjecucion = System.getProperty("user.dir");
+            File carpetaData = new File(rutaDeEjecucion, "../data");
+            
+            if (!carpetaData.exists()) {
+                carpetaData.mkdirs();
+            }
+            File archivoFinal = new File(carpetaData, filePath);
+            this.filePath = archivoFinal.getAbsolutePath();
         }
-        // Une la carpeta "data" con el nombre del archivo (ej: "Admin.json")
-        File archivoFinal = new File(carpetaData, filePath);
-        // Guardamos la ruta completa en la variable que usan los demás métodos
-        this.filePath = archivoFinal.getAbsolutePath();
+
         this.typeClass = typeClass;
-        this.gson= new GsonBuilder().setPrettyPrinting().create();
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
     /**Método guardar todo que actualiza el archivo Json con la lista actual en memoria    
      * 

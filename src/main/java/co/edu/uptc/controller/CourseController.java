@@ -36,11 +36,12 @@ public class CourseController {
      * 
      * @param title Título del nuevo curso
      */
-    public void addCourse(String titleCourse){
+    public void addCourse(String titleCourse, String descriptionCourse){
         String newIdCourse= String.valueOf(getNextCourseIdNumber());
         Course newCourse= new Course();
         newCourse.setId(newIdCourse);
         newCourse.setTitle(titleCourse);
+        newCourse.setDescription(descriptionCourse);
         TreeNode<EducativeElement> rootNode= new TreeNode<>(newCourse);
         newCourse.setRoot(rootNode);
         courseList.add(newCourse);

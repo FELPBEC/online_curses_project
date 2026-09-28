@@ -12,4 +12,5 @@ public interface EducativeElement {
     EducativeElementType getElementType();
     String getId();
     String getTitle();
+    String getDescription();
 }
