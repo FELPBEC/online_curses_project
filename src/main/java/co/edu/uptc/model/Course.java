@@ -76,9 +76,9 @@ public class Course implements EducativeElement{
      * 
      * @param id id del curso
      */
-    public void setId(String id) {
+     public void setId(String id) {
 
-        this.id =id;
+        this.id = "COURSE-"+id;
     }
     /**Método que establece el titulo del curso
      * 

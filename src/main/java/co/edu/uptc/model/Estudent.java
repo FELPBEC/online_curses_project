@@ -78,6 +78,8 @@ public class Estudent extends User{
     public void completeCourse(String idCourse){
         coursesProgress.get(idCourse).setCompleteState(true);
     }
-    
+    public boolean isRegisterOnCourse(String idCourse){
+        return coursesProgress.containsKey(idCourse);
+    }
     
 }

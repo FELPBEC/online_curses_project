@@ -1,5 +1,6 @@
 package co.edu.uptc.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uptc.exceptions.CredentialsAlreadyExistException;
@@ -31,7 +32,15 @@ public class EstudentController {
         this.security= new PasswordSecurityService();
     }
    
-    //MÉTODOS AUXILIARES
+    public List<Estudent> getEstudentList() {
+        return estudentList;
+    }
+
+    public void setEstudentList(List<Estudent> estudentList) {
+        this.estudentList = estudentList;
+    }
+
+     //MÉTODOS AUXILIARES
      /**Método que envía la id del estudiante atraves del nombre de usuario
      * 
      * @param userName nombre de usuario
@@ -183,5 +192,32 @@ public class EstudentController {
         estudent.goToNextLesson(idCourse, idNextLesson);
     }
     
+    //MÉTODOS QUE TIENEN RELACIÓN CON OTRAS CLASES
+     /**Método auxiliar que retorna la lista de estudiantes inscritos a un curso
+     * 
+     * @return la lista de estudiantes inscritos al curso
+     */
+    private  List<Estudent> getEstudentListByCourse(String idCourse){
+        List<Estudent> estudentList=new ArrayList<>();
+        for (Estudent estudent : getEstudentList()) {
+            if (estudent.isRegisterOnCourse(idCourse)) {
+                estudentList.add(estudent);
+            }
+        }
+        return estudentList;
+    }
 
+    /**Método que elimina el curso del mapa o historial de los estudiantes
+     * 
+     * @param idCourseToRemove id del curso que se va a eliminar
+     */
+    public void removeCourseForStudents(String idCourseToRemove){
+        List<Estudent> estudents=getEstudentListByCourse(idCourseToRemove);
+        for (Estudent estudent : estudents) {
+            estudent.getCoursesProgress().remove(idCourseToRemove);
+        }
+    }
+
+    
+    
 }

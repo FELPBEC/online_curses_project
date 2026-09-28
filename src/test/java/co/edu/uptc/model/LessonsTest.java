@@ -42,7 +42,7 @@ public class LessonsTest {
     @Test
     @DisplayName("Debe asignar y recuperar los valores de las lecciones")
     public void testLessonFields() {
-        Lessons lesson = new Lessons("LESSON-1", "Variables", "Tipos primitivos", 15.5);
+        Lessons lesson = new Lessons("1", "Variables", "Tipos primitivos", 15.5);
         assertEquals("LESSON-1", lesson.getId());
         assertEquals("Variables", lesson.getTitle());
         assertEquals("Tipos primitivos", lesson.getDescription());

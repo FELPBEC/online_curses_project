@@ -1,5 +1,8 @@
 package co.edu.uptc.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import co.edu.uptc.exceptions.NoAvaliableLessonsInTheCourseException;
 import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.exceptions.WrongPasswordException;
@@ -133,14 +136,14 @@ public class GeneralController {
      * en caso de que no haya más lecciones, actualizará el estado del curso como completado
      * 
      */
-    public void goToNextLesson()throws NoAvaliableLessonsInTheCourseException{
+    public void goToNextLesson(Estudent estudent)throws NoAvaliableLessonsInTheCourseException{
         String idCourse=currentCourse.getId();
-        String idCurrentLesson=currentEstudent.getCoursesProgress().get(idCourse).getIdLesson();
+        String idCurrentLesson=estudent.getCoursesProgress().get(idCourse).getIdLesson();
         try {
             String idNextLesson=courseController.getIdNextLesson(idCourse, idCurrentLesson);
-            currentEstudent.goToNextLesson(idCourse, idNextLesson);
+            estudent.goToNextLesson(idCourse, idNextLesson);
         } catch ( NoAvaliableLessonsInTheCourseException e) {
-            currentEstudent.completeCourse(idCourse);
+            estudent.completeCourse(idCourse);
             throw e;
         }
     }
@@ -153,6 +156,52 @@ public class GeneralController {
         String idCurrentLesson=currentEstudent.getCoursesProgress().get(idCourse).getIdLesson();
         return courseController.getPercentOfLessonsComplete(idCourse, idCurrentLesson);
     }
+   
     
+    /**Método para eliminar un curso
+     * el método eliminará el curso de:
+     *  todos los estudiantes inscritos 
+     *  el profesor que lo administra
+     *  la lista general de cursos
+     */
+    public void removeCurrentCourse(){
+        String idCourseToRemove=currentCourse.getId();
+        estudentController.removeCourseForStudents(idCourseToRemove);
+        currentTeacher.removeAsignedCourse(idCourseToRemove);
+        courseController.deleteCourse(idCourseToRemove);
+    }
 
+    /**Método auxiliar que retorna la lista de estudiantes inscritos a una lección dentro del curso actual
+     * 
+     * @param idLesson id de la lección
+     * @return lista de estudiantes inscritos en esa lección del curso actuak
+     */
+    private List<Estudent> getEstudentListByLesson( String idLesson){
+        String idCourse=currentCourse.getId();
+        List<Estudent> estudents=new ArrayList<>();
+        for (Estudent estudent : estudentController.getEstudentList()) {
+            if (estudent.isRegisterOnCourse(idCourse)) {
+                if (estudent.getLessonOnCourse(idCourse).equals(idLesson)) {
+                    estudents.add(estudent);
+                }
+            }
+        }
+        return estudents;
+    }
+    /**Método auxiliar que elimina la lección en los Map de los estudiantes
+     * y los pasa automaticamente a la siguiente lección
+     * 
+     * @param idLessonToRemove id de la lección que se eliminará
+     */
+    private void removeLessonByStudents( String idLessonToRemove){
+        String idCourse=currentCourse.getId();
+        List<Estudent> estudents= getEstudentListByLesson(idLessonToRemove);
+        for (Estudent estudent : estudents) { 
+            estudent.goToNextLesson(idCourse, idCourse);
+        }
+    }
+    private void removeLesson(String idLessonToRemove){
+        String idCourse=currentCourse.getId();
+        removeLessonByStudents(idLessonToRemove);
+    }
 }

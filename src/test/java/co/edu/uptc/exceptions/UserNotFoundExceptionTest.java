@@ -11,12 +11,12 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author @FELPBEC
  * @version v1.0
  */
-public class EstudentNotFoundExceptionTest {
+public class UserNotFoundExceptionTest {
 
     @Test
     @DisplayName("Debe instanciar la excepción con el mensaje de error")
-    public void testEstudentNotFoundExceptionMessage() {
-        EstudentNotFoundException exception = new EstudentNotFoundException("Estudiante no encontrado");
+    public void testUserNotFoundExceptionMessage() {
+        UserNotFoundException exception = new UserNotFoundException("Estudiante no encontrado");
 
         assertEquals("Estudiante no encontrado", exception.getMessage());
     }

@@ -19,6 +19,7 @@ import co.edu.uptc.model.Course;
  */
 public class CoursesListController extends StackPane{
     private TilePane contenedorCursos;
+
     /**Método constructor de la clase que configura los contenedores donde estarán los cursos
      * creando un ScrollPane (para poder bajar y subir)
      * y un TilePane que los organizará en columnas de 3 
@@ -67,23 +68,18 @@ public class CoursesListController extends StackPane{
 
             // c) Crear el contenido (Textos)
             VBox contenido = new VBox(10);
-            Label id = new Label(curso.getId());
-            id.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
             Label tittle = new Label(curso.getTitle());
             tittle.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
-            //TODO:Añadir el métdo getDescription para los cursos y volver a activar esta construcción
-            //Label descripcion = new Label(curso.getDescription());
-            //descripcion.setWrapText(true); // Para que el texto baje de línea si es largo
-            //contenido.getChildren().addAll(id,tittle, descripcion);
-            contenido.getChildren().addAll(id,tittle);
+            Label id = new Label(curso.getId());
+            id.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+            Label descripcion = new Label(curso.getDescription());
+            descripcion.setWrapText(true); // Para que el texto baje de línea si es largo
+            contenido.getChildren().addAll(tittle,id, descripcion);
             memoficha.getChildren().add(contenido);
 
-            //TODO:Enlazar el método de abrir el árbol y mostrarlo
-            // d) Asignar el evento Clic para ir al árbol N-ario
             memoficha.setOnMouseClicked(event -> {
                 System.out.println("Abriendo curso: " + curso.getId());
-                // Aquí llamas a tu método para cambiar de pantalla y cargar el árbol
-                // abrirPantallaCurso(curso.getId());
+                 sendCourseSelectedId(curso.getId());
             });
 
             // e) Añadir la memoficha terminada al TilePane
@@ -92,5 +88,9 @@ public class CoursesListController extends StackPane{
             // f) Aumentar el índice para que el siguiente curso tenga el siguiente color
             indexColor++;
         }
+    }
+    //TODO:No hay algo que hacer aquí es solo para que veas, este es el método que envía el ID del seleccionado
+    public String sendCourseSelectedId(String idCourseSelected){
+        return idCourseSelected;
     }
 }

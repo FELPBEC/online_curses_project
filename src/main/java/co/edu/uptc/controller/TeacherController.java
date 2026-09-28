@@ -18,7 +18,20 @@ public class TeacherController {
     private final Repository<Teacher> repository;
     private List<Teacher> teacherList;
     private PasswordSecurityService security;
-
+    /**Método que envía la lista de profesores
+     * 
+     * @return lista de profesores
+     */
+    public List<Teacher> getTeacherList() {
+        return teacherList;
+    }
+    /**Método que modifica la lista de profesores
+     * 
+     * @param teacherList lista de profesores 
+     */
+    public void setTeacherList(List<Teacher> teacherList) {
+        this.teacherList = teacherList;
+    }
     /**Método constructor del controlador de profesores
      * 
      * @param repository repositorio para almacenar datos en persistencia
