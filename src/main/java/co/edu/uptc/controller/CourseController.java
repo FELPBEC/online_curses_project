@@ -2,7 +2,9 @@ package co.edu.uptc.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import co.edu.uptc.exceptions.InvalidFortmatException;
+import co.edu.uptc.exceptions.InvalidParentException;
+import co.edu.uptc.exceptions.NoAvaliableLessonsInTheCourseException;
 import co.edu.uptc.interfaces.EducativeElement;
 import co.edu.uptc.interfaces.EducativeElementType;
 import co.edu.uptc.interfaces.Repository;
@@ -142,7 +144,6 @@ public class CourseController {
     public boolean deleteModule(String courseId,String moduleId){
         Course course= findCourse(courseId);
         if (course==null) {
-            System.out.println("Error el curso no existe");// TODO: BORRAR: manejar en excepcion CourseNotFoundException
             return false;
         }
         Module deleteModule= findModule(courseId, moduleId);
@@ -208,8 +209,7 @@ public class CourseController {
             TreeNode<EducativeElement> newNode = new TreeNode<>(newLesson);
             parentNode.addSon(newNode);
         } else {
-            // TODO: Reemplazar por excepción (ej: InvalidParentException)
-            System.out.println("Error: El nodo padre debe ser un Módulo válido.");
+            throw new InvalidParentException("Error: El nodo padre debe ser un Módulo válido.");
         }
     }
     /**
@@ -309,8 +309,7 @@ public class CourseController {
                             maxId = currentNum;
                         }
                     } catch (NumberFormatException e) {
-                        // TODO: Reemplazar por excepción personalizada
-                        System.out.println("Error de formato en ID de curso: " + course.getId());
+                        throw new InvalidFortmatException("Error de formato en ID de curso: " + course.getId());
                     }
                 }
             }
@@ -337,8 +336,7 @@ public class CourseController {
                 try {
                     currentMax = Integer.parseInt(parts[parts.length - 1]);
                 } catch (NumberFormatException e) {
-                    // TODO: Reemplazar con el lanzamiento/manejo de una excepción personalizada (ej: InvalidIdFormatException)
-                    System.err.println("Error de formato en ID: '" + idStr + "'. Se debe implementar el manejo de excepción correspondiente.");
+                    throw new InvalidFortmatException("Error de formato en ID: '" + idStr + "'. Se debe implementar el manejo de excepción correspondiente.");
                 }
             }
         }
@@ -431,8 +429,154 @@ public class CourseController {
             collectPreOrderRecursive(son, result);
         }
     }
+    //MÉTODOS DE PROGRESIÓN DEL CURSO
+    /**Método que genera una lista de las lecciones de un curso
+     * 
+     * @param idCourse identificador del curso
+     * @return lista de lecciones
+     */
+    private List<EducativeElement> getListOfLessonsInCourse(String idCourse){
+        List<EducativeElement> lessonsByCourse = new ArrayList<>();
+        List<EducativeElement> courseList= getPreOrder(idCourse);
+        for (int i = 0; i < courseList.size(); i++) {
+            if (courseList.get(i).getElementType()==EducativeElementType.LESSON) {
+                lessonsByCourse.add(courseList.get(i));
+            }
+        }
+        return lessonsByCourse;
+    }
+    /**Método que envía la id de la primera lección de un curso
+     * 
+     * @param idCourse id del curso ej: COR-1
+     * @return la id de la lección ej: LESS-3
+     */
+    public String getIdFirstLesson(String idCourse){
+        List<EducativeElement> lessonsByCourse= getListOfLessonsInCourse(idCourse);
+        return lessonsByCourse.get(0).getId();
+    }
+    /**Método que envía la lista de los modulos del curso
+     * 
+     * @param idCourse identificador del curso
+     * @return lista de modulos
+     */
+    private List<EducativeElement> getListOfModulesInCourse(String idCourse){
+        List<EducativeElement> modulesByCourse = new ArrayList<>();
+        List<EducativeElement> courseList= getPreOrder(idCourse);
+        for (int i = 0; i < courseList.size(); i++) {
+            if (courseList.get(i).getElementType()==EducativeElementType.MODULO) {
+            modulesByCourse.add(courseList.get(i));
+            }
+        }
+        return modulesByCourse;
+    }
+    /**Método que retorna la id del modulo según la lección en la que va el estudiante
+     * 
+     * @param idCourse id del curso ej: COUR-1
+     * @param idLesson id de la lección ej: LESS-2
+     * @return id del modulo
+     */
+    private String getIdCurrentModulo(String idCourse,String idLesson){
+        String idCurrentModulo="";
+        List<EducativeElement> courseList=getPreOrder(idCourse);
+        int positionLesson=0;
+        for (int i = 0; i < courseList.size(); i++) {
+            if (idLesson.equals(courseList.get(i).getId())) {
+                positionLesson=i;
+            }
+            if(i<positionLesson){
+                if(courseList.get(i).getElementType()==EducativeElementType.MODULO){
+                    idCurrentModulo= courseList.get(i).getId();
+                }
+            }
+        }
+        return  idCurrentModulo;
+    }
+    /**Método que envía la id de la siguiente lección de un curso
+     * 
+     * @param idCourse id del curso, por ejemplo: COR-1
+     * @param idCurrentLesson id de la lección, por ejemplo: LESS-3
+     * @return id de la lección siguiente, para nuestro ejemplo sería: LESS-4
+     * @throws NoAvaliableLessonsInTheCourseException excepción que se lanza si ya no hay una lección siguiente a la ingresada
+     * útil para indicar que el curso ha sido completado
+     */
+    public String getIdNextLesson(String idCourse, String idCurrentLesson)throws NoAvaliableLessonsInTheCourseException{
+        String idNextLesson=idCurrentLesson;
+        List<EducativeElement> lessonsByCourse=getListOfLessonsInCourse(idCourse);
+        for (int i = 0; i < lessonsByCourse.size(); i++) {
+            if (idCourse.equals(lessonsByCourse.get(i).getId())) {
+                if ((i+1)>lessonsByCourse.size()) {
+                    throw new NoAvaliableLessonsInTheCourseException("Has completado todas las lecciones del curso");
+                }else{
+                    idNextLesson=lessonsByCourse.get(i+1).getId();
+                }
+                
+            }
+        }
+        return idNextLesson;
+    }
+
+    /**Método que obtiene la posición de la lección actual
+     * 
+     * @param idCourse id del curso COR-1
+     * @param idLesson id de la lección 
+     * @return la posición de la lección actual
+     */
+    private  int getActualPositionOfLesson(String idCourse, String idLesson){
+        int position=0;
+        List<EducativeElement> lessonsByCourse=getListOfLessonsInCourse(idCourse);
+        for (int i = 0; i < lessonsByCourse.size(); i++) {
+            if (idLesson.equals(lessonsByCourse.get(i).getId())) {
+                position=i;
+            }
+        }
+        return position;
+    }
+    /**Método que obtiene la posición del modulo actual
+     * 
+     * @param idCourso id del curso: 
+     * @param idLesson
+     * @return
+     */
+    private int getActualPositonModulo(String idCourso, String idLesson){
+        int position=0;
+        List<EducativeElement> moduloByCourse = getListOfLessonsInCourse(idCourso);
+        String idModule=getIdCurrentModulo(idCourso, idLesson);
+        for (int i = 0; i < moduloByCourse.size(); i++) {
+            if (idModule.equals(moduloByCourse.get(i).getId())) {
+                position=i;
+            }
+        }
+        return position;
+    }
+    /**Método que envía el porcentaje de completado de las lecciones de un curso
+     * 
+     * @param idCourse id del curso ej: COR-1
+     * @param idLesson id de la lección ej: LESS-3
+     * @return el porcentaje de completado del curso con base a las lecciones completadas
+     */
+    public double getPercentOfLessonsComplete(String idCourse, String idLesson){
+        double percent=0;
+        int actualLesson=getActualPositionOfLesson(idCourse, idLesson)+1;
+        int lessonsTotal=getListOfLessonsInCourse(idCourse).size()+1;
+        percent=(100*actualLesson)/lessonsTotal;
+        return percent; 
+    }
+    /**Método que envía el porcentaje de completado de los modulos de un curso
+     * 
+     * @param idCourse id del curso ej: COR-1
+     * @param idLesson id de la lección ej: LESS-3
+     * @return el porcentaje de completado del curso con base a los modulos completados
+     */
+    public double getPercentOfModulesComplete(String idCourse, String idLesson){
+        double percent=0;
+        int actualModule=getActualPositonModulo(idCourse, idLesson)+1;
+        int moduleTotal=getListOfModulesInCourse(idCourse).size()+1;
+        percent=(100*actualModule)/moduleTotal;
+        return percent;
+    }
+
     /**
-     * Guarda el estado actual de la lista de cursos en el almacenamiento persistente (JSON).
+     * Guarda el estado actual de la lista de cursos en el almacenamiento persistente 
      */
     public void saveChanges() {
         if (repository != null) {
@@ -447,4 +591,5 @@ public class CourseController {
     public List<Course> getCourseList() {
         return courseList;
     }
+    
 }

@@ -42,7 +42,7 @@ public class ModuleTest {
     @Test
     @DisplayName("Debe inicializar las propiedades mediante el constructor parametrizado")
     public void testConstructorAndGetters() {
-        Module module = new Module("MODULE-1", "Módulo Basico", "Introducción");
+        Module module = new Module("1", "Módulo Basico", "Introducción");
         assertEquals("MODULE-1", module.getId());
         assertEquals("Módulo Basico", module.getTitle());
         assertEquals("Introducción", module.getDescription());

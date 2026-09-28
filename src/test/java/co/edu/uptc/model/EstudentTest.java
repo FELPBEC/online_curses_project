@@ -29,8 +29,8 @@ public class EstudentTest {
         Estudent student = new Estudent();
         assertNull(student.getCoursesProgress());
 
-        Map<String, String> progressMap = new HashMap<>();
-        progressMap.put("COURSE-100", "LESSON-50");
+        Map<String, CourseProgress> progressMap = new HashMap<>();
+        progressMap.put("COURSE-100", new CourseProgress("LESSON-50"));
         student.setCoursesProgress(progressMap);
 
         assertNotNull(student.getCoursesProgress());

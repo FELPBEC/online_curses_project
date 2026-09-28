@@ -1,6 +1,6 @@
 package co.edu.uptc.controller;
 
-import co.edu.uptc.exceptions.EstudentNotFoundException;
+import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.interfaces.Repository;
 import co.edu.uptc.model.Estudent;
 
@@ -106,7 +106,7 @@ public class EstudentControllerTest {
     @Test
     @DisplayName("Debe lanzar EstudentNotFoundException al intentar remover un estudiante inexistente")
     public void testRemoveStudentThrowsException() {
-        assertThrows(EstudentNotFoundException.class, () -> estudentController.removeStudent(999));
+        assertThrows(UserNotFoundException.class, () -> estudentController.removeStudent(999));
     }
 
     /**

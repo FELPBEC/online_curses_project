@@ -76,6 +76,7 @@ public class CourseControllerTest {
     @DisplayName("Debe agregar y encontrar un curso correctamente")
     public void testAddAndFindCourse() {
         courseController.addCourse("Programación Orientada a Objetos", "Curso básico de POO");
+        courseController.getCourseList().get(0).getTitle();
         Course course = courseController.findCourse("COURSE-1");
 
         assertNotNull(course);
