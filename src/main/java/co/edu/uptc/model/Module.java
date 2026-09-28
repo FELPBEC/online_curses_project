@@ -26,7 +26,7 @@ public class Module implements EducativeElement{
      * @param description descrición del modulo
      */
     public Module(String id, String title, String description) {
-        this.id = id;
+        setId(id);
         this.title = title;
         this.description = description;
     }

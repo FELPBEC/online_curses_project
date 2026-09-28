@@ -11,6 +11,7 @@ import co.edu.uptc.interfaces.EducativeElement;
 public class Course implements EducativeElement{
     private String id;
     private String title;
+    private String description;
     private TreeNode<EducativeElement> root;
     /**Método constructor vacío de la clase cursos para cargar cursos desde persistencia
      * 
@@ -24,7 +25,7 @@ public class Course implements EducativeElement{
      * @param root
      */
     public Course(String id, String title, TreeNode<EducativeElement> root) {
-        this.id = id;
+        setId(id);
         this.title = title;
         this.root = root;
     }
@@ -86,6 +87,14 @@ public class Course implements EducativeElement{
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     
