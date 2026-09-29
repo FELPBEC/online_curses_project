@@ -7,7 +7,7 @@
 <!-- Ajusta la ruta del css según tu estructura de resources -->
 <StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="co.edu.uptc.viewController.StudentLoginController"
-           styleClass="fondo-cuaderno" stylesheets="@../css/styles.css"
+           styleClass="fondo-portada" stylesheets="@../css/styles.css"
            prefWidth="900" prefHeight="600">
 
     <VBox alignment="CENTER" spacing="14" maxWidth="380" StackPane.alignment="CENTER">

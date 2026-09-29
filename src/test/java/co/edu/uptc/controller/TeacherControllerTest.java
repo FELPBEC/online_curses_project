@@ -70,8 +70,9 @@ public class TeacherControllerTest {
     }
 
     @Test
-    @DisplayName("Debe validar credenciales existentes al registrar profesor")
-    public void testRegisterTeacherCredentialsValidation() {
+    @DisplayName("Debe rechazar un correo ya registrado")
+    public void testRegisterTeacherDuplicateEmail() {
+        dummyRepository.sendAll().add(new Teacher(1, "profeExist", "profe@test.com", "hashedPass"));
         String validPass = "SecurePass123!";
         assertThrows(CredentialsAlreadyExistException.class, () -> 
             teacherController.registerTeacher("profeUser", "profe@test.com", validPass)
@@ -79,16 +80,39 @@ public class TeacherControllerTest {
     }
 
     @Test
-    @DisplayName("Debe registrar profesor correctamente cuando hay un profesor existente")
-    public void testRegisterTeacherSuccess() {
+    @DisplayName("Debe rechazar un nombre de usuario ya registrado")
+    public void testRegisterTeacherDuplicateUserName() {
+        dummyRepository.sendAll().add(new Teacher(1, "profeExist", "existing@test.com", "hashedPass"));
         String validPass = "SecurePass123!";
-        Teacher existingTeacher = new Teacher(1, "profeExist", "profe@test.com", "hashedPass");
-        dummyRepository.sendAll().add(existingTeacher);
-
-        assertDoesNotThrow(() -> 
+        assertThrows(CredentialsAlreadyExistException.class, () ->
             teacherController.registerTeacher("profeExist", "profe@test.com", validPass)
         );
+    }
+
+    @Test
+    @DisplayName("Debe registrar profesor correctamente y guardar sus datos")
+    public void testRegisterTeacherSuccess() {
+        String validPass = "SecurePass123!";
+        Teacher existingTeacher = new Teacher(1, "profeExist", "existing@test.com", "hashedPass");
+        dummyRepository.sendAll().add(existingTeacher);
+
+        Teacher createdTeacher = assertDoesNotThrow(() ->
+            teacherController.registerTeacher("profeNew", "profe@test.com", validPass)
+        );
         assertTrue(dummyRepository.isSaveCalled());
+        assertEquals(2, createdTeacher.getId());
+        assertEquals("profeNew", createdTeacher.getUserName());
+        assertEquals("profe@test.com", createdTeacher.getEmail());
+        assertEquals(2, teacherController.getTeacherList().size());
+    }
+
+    @Test
+    @DisplayName("Debe asignar el primer ID al registrar al primer profesor")
+    public void testRegisterFirstTeacherStartsAtIdOne() {
+        Teacher createdTeacher = teacherController.registerTeacher(
+                "profeNew", "profe@test.com", "SecurePass123!");
+
+        assertEquals(1, createdTeacher.getId());
     }
 
     @Test

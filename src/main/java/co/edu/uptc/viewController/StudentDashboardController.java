@@ -15,6 +15,7 @@ import co.edu.uptc.model.Estudent;
 import co.edu.uptc.model.Lessons;
 import co.edu.uptc.model.TreeNode;
 import co.edu.uptc.view.App;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -25,6 +26,8 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 
 public class StudentDashboardController {
     @FXML private ComboBox<String> languageSelector;
@@ -59,16 +62,25 @@ public class StudentDashboardController {
     @FXML private StackPane courseTreeHost;
     @FXML private PieChart courseCompletionChart;
     @FXML private BarChart<String, Number> courseProgressChart;
-
+    private TranslateTransition animacion;
+    private boolean menuAbierto = false;
     private CoursesListController coursesListController;
     private CourseTreeView courseTreeView;
     private Course selectedCourse;
     private boolean showingEnrolledCourses;
     private boolean selectedCourseIsEnrolled;
     private boolean showingPieChart;
+    
+    @FXML
+    private Button btnToggleMenu;
+    @FXML
+    private HBox menuHoja;
+    @FXML
+    private VBox contenedorMenuAnimado;
 
     @FXML
     private void initialize() {
+        contenedorMenuAnimado.setTranslateY(260);
         Estudent student = App.getGeneralController().getCurrentEstudent();
         if (student == null) {
             throw new IllegalStateException("A student must be authenticated before opening the menu.");
@@ -96,6 +108,25 @@ public class StudentDashboardController {
         txtCourseSearch.textProperty().addListener((observable, previous, current) -> refreshCourseCards());
         refreshCourseCards();
     }
+    @FXML 
+    public void toggleMenu() {
+    if (animacion != null && animacion.getStatus() == javafx.animation.Animation.Status.RUNNING) {
+        return; 
+    }
+
+    // Animar el VBox completo
+    animacion = new TranslateTransition(Duration.millis(350), contenedorMenuAnimado);
+
+    if (menuAbierto) {
+        animacion.setToY(250); // Bajar (esconde la hoja, deja el botón visible)
+        menuAbierto = false;
+    } else {
+        animacion.setToY(0);   // Subir (muestra todo en su posición normal)
+        menuAbierto = true;
+    }
+
+    animacion.play();
+}
 
     @FXML
     private void onShowCatalog() {

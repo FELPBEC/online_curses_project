@@ -4,6 +4,7 @@ import java.util.List;
 import co.edu.uptc.exceptions.CredentialsAlreadyExistException;
 import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.exceptions.InvalidFortmatException;
+import co.edu.uptc.exceptions.SavedFailureException;
 import co.edu.uptc.exceptions.WrongPasswordException;
 import co.edu.uptc.interfaces.Repository;
 import co.edu.uptc.model.Teacher;
@@ -78,14 +79,13 @@ public class TeacherController {
      * @return nueva id del nuevo profesor
      */
     private int sendNewId(){
-        //Valor inicial para todas las IDs
-        int biggestID=1;
+        int biggestID=0;
         for (int i = 0; i < teacherList.size(); i++) {
             if (teacherList.get(i).getId()>biggestID) {
                 biggestID=teacherList.get(i).getId();
             }
         }
-        return biggestID;
+        return biggestID + 1;
     }
     //REGISTRAR
 
@@ -100,14 +100,21 @@ public class TeacherController {
      * @exception InvalidFortmatException excepción que surge si la contraseña no tiene el formato requerido
      * @exception CredentialsAlreadyExistException excepción que surge si las credenciales, ya sea correo o nombre de usuario ya existen
      */
-    public void registerTeacher(String userName,String email, String password )throws InvalidFortmatException, CredentialsAlreadyExistException{
+    public Teacher registerTeacher(String userName,String email, String password )throws InvalidFortmatException, CredentialsAlreadyExistException{
         if(!security.isValidFormat(password)) throw new InvalidFortmatException("El formato de la contraseña no es válido");
-        if(sendIdByEmail(email)==0)throw new CredentialsAlreadyExistException("El correo ingresado ya existe");
-        if(sendIdByUserName(userName)==0)throw new CredentialsAlreadyExistException("El nombre de usuario ingresado ya existe");
+        if(sendIdByEmail(email)!=0)throw new CredentialsAlreadyExistException("El correo ingresado ya existe");
+        if(sendIdByUserName(userName)!=0)throw new CredentialsAlreadyExistException("El nombre de usuario ingresado ya existe");
         int newId= sendNewId();
         String securityPassword=security.encrypt(password);
-        teacherList.add(new Teacher(newId, userName, email, securityPassword));
-        repository.saveAll(teacherList);
+        Teacher teacher = new Teacher(newId, userName, email, securityPassword);
+        teacherList.add(teacher);
+        try {
+            repository.saveAll(teacherList);
+        } catch (SavedFailureException e) {
+            teacherList.remove(teacher);
+            throw e;
+        }
+        return teacher;
     }
     //INGRESAR
     /**Método que válida el login de un profesor

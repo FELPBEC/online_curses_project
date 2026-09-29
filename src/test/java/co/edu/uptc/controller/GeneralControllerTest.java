@@ -138,6 +138,18 @@ public class GeneralControllerTest {
     }
 
     @Test
+    @DisplayName("Debe registrar un profesor y establecerlo como profesor actual")
+    public void testRegisterTeacherSuccess() {
+        Teacher teacher = generalController.registerTeacher(
+                "profesor_nuevo", "nuevo@uptc.edu.co", "Pass123!");
+
+        assertSame(teacher, generalController.getCurrentTeacher());
+        assertEquals("profesor_nuevo", teacher.getUserName());
+        assertEquals("nuevo@uptc.edu.co", teacher.getEmail());
+        assertTrue(teacherRepo.saveCalled);
+    }
+
+    @Test
     @DisplayName("Debe inscribir al estudiante, guardar el progreso y evitar duplicados")
     public void testRegisterCurrentStudentOnCoursePersistsEnrollment() {
         courseController.addCourse("Programación", "Fundamentos");

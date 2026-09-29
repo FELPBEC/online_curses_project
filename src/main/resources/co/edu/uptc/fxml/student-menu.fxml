@@ -12,10 +12,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-
-<StackPane xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
+<StackPane
+xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="co.edu.uptc.viewController.StudentDashboardController"
-           styleClass="fondo-cuaderno" stylesheets="@../styles/styles.css">
+            stylesheets="@../styles/styles.css">
+<StackPane 
+           styleClass="fondo-cuaderno">
     <children>
         <VBox spacing="14" styleClass="student-dashboard">
             <padding>
@@ -34,19 +36,7 @@
                 </VBox>
             </HBox>
 
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button fx:id="btnCatalog" text="%catalog.available.title"
-                        onAction="#onShowCatalog" styleClass="boton-dibujado"/>
-                <Button fx:id="btnMyCourses" text="%catalog.myCourses.title"
-                        onAction="#onShowMyCourses" styleClass="boton-dibujado"/>
-                <Button fx:id="btnStatistics" text="%statistics.title" onAction="#onShowStatistics"
-                        styleClass="boton-dibujado"/>
-                <HBox HBox.hgrow="ALWAYS"/>
-                <Button text="%menu.logout" onAction="#onLogout"
-                        styleClass="boton-dibujado"/>
-                <Button text="%menu.exit" onAction="#onExit"
-                        styleClass="boton-dibujado"/>
-            </HBox>
+            
 
             <StackPane VBox.vgrow="ALWAYS">
                 <VBox fx:id="catalogView" spacing="12">
@@ -142,6 +132,42 @@
                     </VBox>
                 </VBox>
             </StackPane>
+            
         </VBox>
+    </children>
+</StackPane>
+    <children>
+        <!-- MENÚ INFERIOR CON OPCIONES PRINCIPALES -->
+            <VBox fx:id="contenedorMenuAnimado" 
+                alignment="BOTTOM_LEFT"
+                    StackPane.alignment="BOTTOM_LEFT"
+                    pickOnBounds="false">
+                <Button fx:id="btnToggleMenu" styleClass="boton-menu" onAction="#toggleMenu">
+                <VBox.margin>
+                <Insets left="20.0" />
+                </VBox.margin></Button>
+                <HBox fx:id="menuHoja" 
+                    styleClass="hoja-desplegable" 
+                        maxWidth="400" 
+                        maxHeight="250" 
+                        alignment="TOP_CENTER" 
+                        StackPane.alignment="BOTTOM_CENTER">
+        
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Button fx:id="btnCatalog" text="%catalog.available.title"
+                        onAction="#onShowCatalog" styleClass="boton-dibujado"/>
+                    <Button fx:id="btnMyCourses" text="%catalog.myCourses.title"
+                        onAction="#onShowMyCourses" styleClass="boton-dibujado"/>
+                    <Button fx:id="btnStatistics" text="%statistics.title" onAction="#onShowStatistics"
+                        styleClass="boton-dibujado"/>
+                    <HBox HBox.hgrow="ALWAYS"/>
+                    <Button text="%menu.logout" onAction="#onLogout"
+                        styleClass="boton-dibujado"/>
+                     <Button text="%menu.exit" onAction="#onExit"
+                        styleClass="boton-dibujado"/>
+                    </HBox>
+
+                </HBox>
+            </VBox>
     </children>
 </StackPane>

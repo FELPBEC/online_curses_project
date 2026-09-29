@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uptc.exceptions.NoAvaliableLessonsInTheCourseException;
+import co.edu.uptc.exceptions.CredentialsAlreadyExistException;
+import co.edu.uptc.exceptions.InvalidFortmatException;
 import co.edu.uptc.exceptions.SavedFailureException;
 import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.exceptions.WrongPasswordException;
@@ -92,6 +94,13 @@ public class GeneralController {
         Estudent estudent = estudentController.registerEstudent(userName, email, password);
         setCurrentEstudent(estudent);
         return estudent;
+    }
+
+    public Teacher registerTeacher(String userName, String email, String password)
+            throws InvalidFortmatException, CredentialsAlreadyExistException {
+        Teacher teacher = teacherController.registerTeacher(userName, email, password);
+        setCurrentTeacher(teacher);
+        return teacher;
     }
 
     public void setCurrentCourseById(String idCourse) {
