@@ -80,7 +80,7 @@ public class StudentDashboardController {
 
     @FXML
     private void initialize() {
-        contenedorMenuAnimado.setTranslateY(260);
+        contenedorMenuAnimado.setTranslateY(250);
         Estudent student = App.getGeneralController().getCurrentEstudent();
         if (student == null) {
             throw new IllegalStateException("A student must be authenticated before opening the menu.");

@@ -155,8 +155,6 @@ public class StudentLoginController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(MENU_VIEW), App.getMessages());
             Parent root = loader.load();
-            // TODO: cuando exista el StudentMenuController, pasarle el estudiante:
-            // loader.<StudentMenuController>getController().setStudent(student);
             btnPrimary.getScene().setRoot(root);
         } catch (IOException | RuntimeException e) {
             showError("error.load");

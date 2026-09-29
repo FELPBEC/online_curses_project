@@ -150,6 +150,97 @@ public class GeneralControllerTest {
     }
 
     @Test
+    @DisplayName("Debe crear un curso, asignarlo al profesor y guardar ambos")
+    public void testCreateCourseForCurrentTeacher() {
+        Teacher teacher = new Teacher(1, "profesor", "profesor@uptc.edu.co", "hash");
+        teacher.setAsginedCourses(null);
+        generalController.setCurrentTeacher(teacher);
+
+        Course course = generalController.createCourseForCurrentTeacher(
+                "Programación", "Curso de fundamentos");
+
+        assertEquals("Programación", course.getTitle());
+        assertTrue(teacher.getAsginedCourses().contains(course.getId()));
+        assertTrue(courseRepo.saveCalled);
+        assertTrue(teacherRepo.saveCalled);
+    }
+
+    @Test
+    @DisplayName("Debe revertir el curso y la asignación si falla el guardado")
+    public void testCreateCourseForCurrentTeacherRollsBackOnSaveFailure() {
+        Teacher teacher = new Teacher(1, "profesor", "profesor@uptc.edu.co", "hash");
+        generalController.setCurrentTeacher(teacher);
+        courseRepo.failOnSave = true;
+
+        assertThrows(co.edu.uptc.exceptions.SavedFailureException.class, () ->
+                generalController.createCourseForCurrentTeacher("Programación", "Fundamentos"));
+
+        assertTrue(courseController.getCourseList().isEmpty());
+        assertTrue(teacher.getAsginedCourses().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Debe añadir un módulo hijo al curso asignado y persistirlo")
+    public void testAddModuleToCurrentTeacherCourse() {
+        Teacher teacher = new Teacher(1, "profesor", "profesor@uptc.edu.co", "hash");
+        generalController.setCurrentTeacher(teacher);
+        Course course = generalController.createCourseForCurrentTeacher("Programación", "Fundamentos");
+
+        generalController.addModuleToCurrentTeacherCourse(
+                course.getId(), course.getId(), "Introducción", "Conceptos iniciales");
+
+        assertEquals(1, course.getRoot().getSons().size());
+        assertEquals("Introducción",
+                course.getRoot().getSons().get(0).getData().getTitle());
+        assertTrue(courseRepo.saveCalled);
+    }
+
+    @Test
+    @DisplayName("Debe añadir una lección hija al módulo asignado y persistirla")
+    public void testAddLessonToCurrentTeacherCourse() {
+        Teacher teacher = new Teacher(1, "profesor", "profesor@uptc.edu.co", "hash");
+        generalController.setCurrentTeacher(teacher);
+        Course course = generalController.createCourseForCurrentTeacher("Programación", "Fundamentos");
+        generalController.addModuleToCurrentTeacherCourse(
+                course.getId(), course.getId(), "Introducción", "Conceptos iniciales");
+
+        generalController.addLessonToCurrentTeacherCourse(
+                course.getId(), "MODULE-1", "Variables", "Tipos de datos", 20);
+
+        assertEquals(1, course.getRoot().getSons().get(0).getSons().size());
+        assertEquals("Variables",
+                course.getRoot().getSons().get(0).getSons().get(0).getData().getTitle());
+        assertTrue(courseRepo.saveCalled);
+    }
+
+    @Test
+    @DisplayName("No debe permitir añadir módulos a cursos no asignados")
+    public void testCannotAddModuleToUnassignedCourse() {
+        Teacher teacher = new Teacher(1, "profesor", "profesor@uptc.edu.co", "hash");
+        generalController.setCurrentTeacher(teacher);
+        courseController.addCourse("Ajeno", "No asignado");
+
+        assertThrows(IllegalArgumentException.class, () ->
+                generalController.addModuleToCurrentTeacherCourse(
+                        "COURSE-1", "COURSE-1", "Módulo", "Descripción"));
+    }
+
+    @Test
+    @DisplayName("Debe guardar en memoria el árbol si falla la persistencia de un módulo nuevo")
+    public void testAddModuleRollsBackWhenPersistenceFails() {
+        Teacher teacher = new Teacher(1, "profesor", "profesor@uptc.edu.co", "hash");
+        generalController.setCurrentTeacher(teacher);
+        Course course = generalController.createCourseForCurrentTeacher("Programación", "Fundamentos");
+        courseRepo.failOnSave = true;
+
+        assertThrows(co.edu.uptc.exceptions.SavedFailureException.class, () ->
+                generalController.addModuleToCurrentTeacherCourse(
+                        course.getId(), course.getId(), "Introducción", "Conceptos iniciales"));
+
+        assertTrue(course.getRoot().getSons().isEmpty());
+    }
+
+    @Test
     @DisplayName("Debe inscribir al estudiante, guardar el progreso y evitar duplicados")
     public void testRegisterCurrentStudentOnCoursePersistsEnrollment() {
         courseController.addCourse("Programación", "Fundamentos");
@@ -248,7 +339,7 @@ public class GeneralControllerTest {
         courseController.addCourse("POO", "Avanzado");
         courseController.addModule("COURSE-1", "COURSE-1", "Mód 1", "Desc");
         courseController.addLesson("COURSE-1", "MODULE-1", "L1", "Desc", 10.0);
-
+                courseController.addLesson("COURSE-1", "MODULE-1", "L2", "Desc", 10.0);
         Course course = courseController.findCourse("COURSE-1");
         Estudent student = new Estudent(10, "ana", "ana@uptc.edu.co", "pass");
         student.registerCourse("COURSE-1", "LESSON-1");

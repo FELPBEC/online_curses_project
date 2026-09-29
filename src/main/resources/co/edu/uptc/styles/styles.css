@@ -1,3 +1,18 @@
+/*SECCIÓN DE TIPOGRAFÍAS*/
+/* 1. Registrar las fuentes personalizadas */
+@font-face {
+    font-family: 'Caveat';
+    src: url('../fonts/Caveat-VariableFont_wght.ttf');
+}
+
+@font-face {
+    font-family: 'Grape Nuts';
+    src: url('../fonts/GrapeNuts-Regular.ttf');
+}
+
+
+
+
 .fondo-portada {
     -fx-background-image: 
         url("../images/fondoLibretaRelleno.png"),      
@@ -56,7 +71,7 @@
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-text-fill: #3f3526;
-    -fx-font-size: 14px;
+    -fx-font-size: 20px;
     -fx-effect: dropshadow(gaussian, rgba(78, 61, 35, 0.12), 2, 0.1, 0, 1);
 }
 
@@ -84,31 +99,35 @@
 }
 
 .auth-brand {
-    -fx-text-fill: #347a77;
-    -fx-font-size: 12px;
+     -fx-font-family: 'Grape Nuts';
+    -fx-text-fill: #222525;
+    -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-letter-spacing: 2px;
 }
 
 .auth-title {
+     -fx-font-family: 'Grape Nuts';
     -fx-text-fill: #27364b;
-    -fx-font-size: 27px;
+    -fx-font-size: 30px;
     -fx-font-weight: bold;
 }
 
 .auth-subtitle {
+    -fx-font-family: 'Caveat';
     -fx-text-fill: #617080;
-    -fx-font-size: 14px;
+    -fx-font-size: 18px;
     -fx-text-alignment: center;
 }
 
 .auth-input {
+    -fx-font-family: 'Caveat';
     -fx-background-color: #fffefa;
     -fx-background-radius: 9;
     -fx-border-color: #d6dce0;
     -fx-border-radius: 9;
     -fx-padding: 12 14;
-    -fx-font-size: 14px;
+    -fx-font-size: 18px;
 }
 
 .auth-input:focused {
@@ -118,21 +137,35 @@
 
 .auth-hint {
     -fx-text-fill: #788391;
-    -fx-font-size: 11px;
+    -fx-font-size: 20px;
 }
 
 .auth-message {
+    -fx-font-family: 'Caveat';
     -fx-text-fill: #a63838;
-    -fx-font-size: 12px;
+    -fx-font-size: 20px;
     -fx-min-height: 18;
 }
 
+.course-success-message {
+    -fx-font-family: 'Grape Nuts';
+    -fx-text-fill: #347a55;
+    -fx-font-size: 20px;
+    -fx-min-height: 18;
+}
+
+.boton-seleccionado {
+    -fx-border-color: #347a77;
+    -fx-border-width: 2;
+}
+
 .auth-link {
+    -fx-font-family: 'Caveat';
     -fx-background-color: transparent;
     -fx-border-color: transparent;
     -fx-padding: 4 0;
     -fx-text-fill: #347a77;
-    -fx-font-size: 13px;
+    -fx-font-size: 25px;
     -fx-underline: true;
     -fx-cursor: hand;
 }
@@ -146,10 +179,11 @@
 }
 
 .primary-button {
+    -fx-font-family: 'Grape Nuts';
     -fx-background-color: #347a77;
     -fx-background-radius: 9;
     -fx-text-fill: white;
-    -fx-font-size: 14px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
     -fx-padding: 12 20;
     -fx-cursor: hand;
@@ -160,13 +194,14 @@
 }
 
 .secondary-role-button {
+    -fx-font-family: 'Grape Nuts';
     -fx-background-color: #fffefa;
     -fx-background-radius: 9;
     -fx-border-color: #347a77;
     -fx-border-radius: 9;
     -fx-border-width: 1.5;
-    -fx-text-fill: #286662;
-    -fx-font-size: 14px;
+    -fx-text-fill: #000000;
+    -fx-font-size: 25px;
     -fx-font-weight: bold;
     -fx-padding: 12 20;
     -fx-cursor: hand;
@@ -179,7 +214,7 @@
 .text-button {
     -fx-background-color: transparent;
     -fx-text-fill: #347a77;
-    -fx-font-size: 13px;
+    -fx-font-size: 17px;
     -fx-cursor: hand;
 }
 
@@ -188,15 +223,16 @@
 }
 
 .language-selector {
+    -fx-font-family: 'Grape Nuts';
     -fx-background-color: #fffefa;
     -fx-background-radius: 9;
-    -fx-border-color: #347a77;
+    -fx-border-color: #7e1b60;
     -fx-border-width: 1.5;
     -fx-border-radius: 9;
     -fx-padding: 4 8;
-    -fx-font-size: 13px;
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
-    -fx-text-fill: #286662;
+    -fx-text-fill: #7e1b60;
     -fx-cursor: hand;
 }
 
@@ -216,14 +252,16 @@
 }
 
 .section-title {
+    -fx-font-family: 'Grape Nuts';
     -fx-text-fill: #27364b;
-    -fx-font-size: 18px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
 }
 
 .course-count {
+    -fx-font-family: 'Grape Nuts';
     -fx-text-fill: #347a77;
-    -fx-font-size: 15px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
 }
 
@@ -269,7 +307,7 @@
 
 .hoja-desplegable {
     -fx-background-image: url("../images/MenuTextura.png");
-    -fx-background-repeat: repeat-x; /* Se repite infinitamente a lo largo */
+    -fx-background-repeat: repeat-x; 
     -fx-background-position: top left;
     
     -fx-pref-height: 240px;
@@ -286,8 +324,8 @@
     -fx-background-position: center;
     
     /* ¡CRÍTICO! Debes darle el tamaño de tu imagen */
-    -fx-pref-width: 60px;  
-    -fx-pref-height: 60px; 
+    -fx-pref-width: 100px;  
+    -fx-pref-height: 100px; 
     -fx-cursor: hand;
 }
 
@@ -300,23 +338,13 @@
 }
 
 
-/*SECCIÓN DE TIPOGRAFÍAS*/
-/* 1. Registrar las fuentes personalizadas */
-@font-face {
-    font-family: 'Caveat';
-    src: url('../fonts/Caveat-VariableFont_wght.ttf');
-}
 
-@font-face {
-    font-family: 'GloriaHallelujah';
-    src: url('../fonts/GloriaHallelujah-Regular.ttf');
-}
 
 /* 2. Aplicar a los componentes de la interfaz */
 
 /* Títulos principales (ej. nombre del curso en memoficha) */
 .titulo-curso {
-    -fx-font-family: 'GloriaHallelujah';
+    -fx-font-family: 'Grape Nuts';
     -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #1a1a1a;
@@ -329,13 +357,13 @@
     -fx-text-fill: #333333;
 }
 .titulo-Principal {
-    -fx-font-family: 'GloriaHallelujah';
+    -fx-font-family: 'Grape Nuts';
     -fx-font-size: 40px;
     -fx-font-weight: bold;
     -fx-text-fill: #ffffff;
 }
 .titulo-secundario{
-    -fx-font-family: 'GloriaHallelujah';
+    -fx-font-family: 'Grape Nuts';
     -fx-font-size: 15px;
     -fx-font-weight: bold;
     -fx-text-fill: #ffffff;
@@ -384,6 +412,16 @@
 .catalog-scroll-pane .scroll-bar .thumb:hover,
 .course-tree-scroll-pane .scroll-bar .thumb:hover {
     -fx-background-color: #657d6b;
+}
+
+.node-details-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 0;
+}
+
+.node-details-scroll-pane > .viewport {
+    -fx-background-color: transparent;
 }
 
 .node-details-panel {

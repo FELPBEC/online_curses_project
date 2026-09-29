@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ScrollPane?>
 <StackPane
 xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="co.edu.uptc.viewController.StudentDashboardController"
@@ -23,6 +24,7 @@ xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
             <padding>
                 <Insets top="22" right="30" bottom="22" left="30"/>
             </padding>
+            
             <HBox alignment="CENTER_LEFT" spacing="20">
                 <VBox spacing="4" HBox.hgrow="ALWAYS">
                     <Label text="%menu.brand" styleClass="auth-brand"/>
@@ -70,18 +72,17 @@ xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
                     <HBox spacing="16" VBox.vgrow="ALWAYS">
                         <StackPane fx:id="courseTreeHost" HBox.hgrow="ALWAYS"
                                    styleClass="course-tree-panel"/>
-                        <VBox fx:id="nodeDetailsPanel" spacing="10" prefWidth="330" minWidth="300"
-                              styleClass="node-details-panel">
-                            <Label text="%catalog.node.details" styleClass="section-title"/>
-                            <Label fx:id="lblNodeTitle" text="%catalog.node.select"
-                                   wrapText="true" styleClass="node-title"/>
-                            <Label fx:id="lblNodeType" wrapText="true" styleClass="course-count"/>
-                            <Label fx:id="lblNodeDescription" wrapText="true"
-                                   styleClass="node-description"/>
-                            <Button fx:id="btnCompleteLesson" text="%catalog.lesson.complete"
-                                    visible="false" managed="false" onAction="#onCompleteLesson"
-                                    styleClass="boton-dibujado"/>
-                        </VBox>
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefWidth="350" minWidth="320" styleClass="node-details-scroll-pane">
+                            <content>
+                                <VBox fx:id="nodeDetailsPanel" spacing="10" styleClass="node-details-panel">
+                                    <Label text="%catalog.node.details" styleClass="section-title"/>
+                                    <Label fx:id="lblNodeTitle" text="%catalog.node.select" wrapText="true" styleClass="node-title"/>
+                                    <Label fx:id="lblNodeType" wrapText="true" styleClass="course-count"/>
+                                    <Label fx:id="lblNodeDescription" wrapText="true" styleClass="node-description"/>
+                                    <Button fx:id="btnCompleteLesson" text="%catalog.lesson.complete" visible="false" managed="false" onAction="#onCompleteLesson" styleClass="boton-dibujado"/>
+                                </VBox>
+                            </content>
+                        </ScrollPane>
                     </HBox>
                 </VBox>
 

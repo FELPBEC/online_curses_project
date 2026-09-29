@@ -48,8 +48,9 @@ public class CourseController {
      * 
      * @param titleCourse Título del nuevo curso.
      * @param descriptionCourse Descripción del nuevo curso.
+     * @return El curso recién creado.
      */
-    public void addCourse(String titleCourse, String descriptionCourse) {
+    public Course addCourse(String titleCourse, String descriptionCourse) {
         String newIdCourse = String.valueOf(getNextCourseIdNumber());
         Course newCourse = new Course();
         newCourse.setId(newIdCourse);
@@ -58,6 +59,7 @@ public class CourseController {
         TreeNode<EducativeElement> rootNode = new TreeNode<>(newCourse);
         newCourse.setRoot(rootNode);
         courseList.add(newCourse);
+        return newCourse;
     }
 
     /**
@@ -116,9 +118,6 @@ public class CourseController {
      */
     public void addModule(String courseId, String parentId, String moduleTitle, String description) {
         Course course = findCourse(courseId);
-        if (course == null) {
-            throw new CourseNotFoundException("El curso con ID '" + courseId + "' no existe.");
-        }
         TreeNode<EducativeElement> parentNode = findNode(course.getRoot(), parentId);
         if (parentNode != null) {
             String newIdModule = String.valueOf(getNextIdNumber(course.getRoot(), EducativeElementType.MODULO));
@@ -144,7 +143,7 @@ public class CourseController {
     public Module findModule(String courseId, String moduleId) {
         Course course = findCourse(courseId);
         if (course == null) {
-            throw new CourseNotFoundException("El curso con ID '" + courseId + "' no existe.");
+            return null;
         }
         TreeNode<EducativeElement> node = findNode(course.getRoot(), moduleId);
         if (node != null && node.getData() != null && node.getData().getElementType() == EducativeElementType.MODULO) {
@@ -165,11 +164,11 @@ public class CourseController {
     public boolean deleteModule(String courseId, String moduleId) {
         Course course = findCourse(courseId);
         if (course == null) {
-            throw new CourseNotFoundException("El curso con ID '" + courseId + "' no existe.");
+            return false;
         }
         Module deleteModule = findModule(courseId, moduleId);
         if (deleteModule == null) {
-            throw new ModuleNotFoundException("El módulo con ID '" + moduleId + "' no existe.");
+            return false;
         }
         TreeNode<EducativeElement> parentNode = findParentNode(course.getRoot(), moduleId);
         if (parentNode != null) {
@@ -269,11 +268,11 @@ public class CourseController {
     public boolean deleteLesson(String courseId, String lessonId) {
         Course course = findCourse(courseId);
         if (course == null) {
-            throw new CourseNotFoundException("El curso con ID '" + courseId + "' no existe.");
+            return  false;
         }
         Lessons deleteLesson = findLesson(courseId, lessonId);
         if (deleteLesson == null) {
-            throw new LessonNotFoundException("La lección con ID '" + lessonId + "' no existe.");
+           return  false;
         }
         TreeNode<EducativeElement> parentNode = findParentNode(course.getRoot(), lessonId);
         if (parentNode != null) {
