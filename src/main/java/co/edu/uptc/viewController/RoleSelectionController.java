@@ -24,7 +24,7 @@ public class RoleSelectionController {
 
     @FXML
     private void onTeacherSelected() throws IOException {
-        App.setRoot("teacher-login");
+        App.setRoot("teacher-access");
     }
 
     @FXML

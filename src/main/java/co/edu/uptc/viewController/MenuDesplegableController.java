@@ -66,9 +66,9 @@ public class MenuDesplegableController {
             menuAbierto = false;
         } else {
             animacion.setToY(0);
-            menuAbierto = true;
-        }
-
+       menuAbierto = true;
+      
+       }
         animacion.play();
     }
 

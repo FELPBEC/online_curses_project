@@ -278,15 +278,25 @@
     -fx-padding: 25 40 20 40;
 }
 
-.boton-menu{
-     -fx-background-color: transparent; 
-      -fx-border-image-source: url("../images/botonMenu.png");
+.boton-menu {
+    -fx-background-color: transparent; 
+    -fx-background-image: url("../images/botonMenu.png");
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    
+    /* ¡CRÍTICO! Debes darle el tamaño de tu imagen */
+    -fx-pref-width: 60px;  
+    -fx-pref-height: 60px; 
+    -fx-cursor: hand;
 }
+
 .boton-menu:hover {
     -fx-opacity: 0.9;
 }
-.boton-menu:pressed{
-    -fx-border-image-source: url("../images/botonMenuPulsado.png");
+
+.boton-menu:pressed {
+    -fx-background-image: url("../images/botonMenuPulsado.png");
 }
 
 
