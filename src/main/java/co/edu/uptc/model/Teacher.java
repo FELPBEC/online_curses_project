@@ -46,6 +46,9 @@ public class Teacher extends User{
      * @param idCourse id del curso asignado
      */
     public void addNewCourse(String idCourse){
+        if (asginedCourses == null) {
+            asginedCourses = new ArrayList<>();
+        }
         asginedCourses.add(idCourse);
     }
     /**Método que elimina un curso asignado al profesor de la lista

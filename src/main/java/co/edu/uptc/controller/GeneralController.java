@@ -15,6 +15,7 @@ import co.edu.uptc.model.Course;
 import co.edu.uptc.model.CourseProgress;
 import co.edu.uptc.model.Estudent;
 import co.edu.uptc.model.Teacher;
+import co.edu.uptc.model.TreeNode;
 import co.edu.uptc.persistence.CoursesJsonRepository;
 import co.edu.uptc.persistence.EstudentJsonRepository;
 import co.edu.uptc.persistence.TeacherJsonRepository;
@@ -105,6 +106,113 @@ public class GeneralController {
 
     public void setCurrentCourseById(String idCourse) {
         currentCourse = courseController.findCourse(idCourse);
+    }
+
+    public Course createCourseForCurrentTeacher(String title, String description) {
+        if (currentTeacher == null) {
+            throw new IllegalStateException("A teacher must be authenticated to create a course.");
+        }
+        if (title == null || title.isBlank() || description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Course title and description are required.");
+        }
+
+        Course course = courseController.addCourse(title.trim(), description.trim());
+        teacherController.addNewAssignedCourse(currentTeacher, course.getId());
+        try {
+            courseController.saveChanges();
+            teacherController.saveAll();
+        } catch (SavedFailureException e) {
+            teacherController.removeAssignedCourse(currentTeacher, course.getId());
+            courseController.deleteCourse(course.getId());
+            try {
+                courseController.saveChanges();
+            } catch (SavedFailureException rollbackFailure) {
+                e.addSuppressed(rollbackFailure);
+            }
+            throw e;
+        }
+        return course;
+    }
+
+    public void addModuleToCurrentTeacherCourse(
+            String courseId, String parentId, String title, String description) {
+        Course course = requireAssignedCourse(courseId);
+        if (title == null || title.isBlank() || description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Module title and description are required.");
+        }
+        TreeNode<EducativeElement> parentNode = findNode(course.getRoot(), parentId);
+        if (parentNode == null || parentNode.getData() == null
+                || (parentNode.getData().getElementType() != EducativeElementType.COURSE
+                        && parentNode.getData().getElementType() != EducativeElementType.MODULO)) {
+            throw new IllegalArgumentException("Modules can only be added to a course or module.");
+        }
+
+        int originalChildCount = parentNode.getSons().size();
+        courseController.addModule(courseId, parentId, title.trim(), description.trim());
+        saveCourseTreeChange(parentNode, originalChildCount);
+    }
+
+    public void addLessonToCurrentTeacherCourse(
+            String courseId, String parentId, String title, String description, double duration) {
+        Course course = requireAssignedCourse(courseId);
+        if (title == null || title.isBlank() || description == null || description.isBlank()) {
+            throw new IllegalArgumentException("Lesson title and description are required.");
+        }
+        if (!Double.isFinite(duration) || duration <= 0) {
+            throw new IllegalArgumentException("Lesson duration must be a positive number.");
+        }
+        TreeNode<EducativeElement> parentNode = findNode(course.getRoot(), parentId);
+        if (parentNode == null || parentNode.getData() == null
+                || parentNode.getData().getElementType() != EducativeElementType.MODULO) {
+            throw new IllegalArgumentException("Lessons can only be added to a module.");
+        }
+
+        int originalChildCount = parentNode.getSons().size();
+        courseController.addLesson(courseId, parentId, title.trim(), description.trim(), duration);
+        saveCourseTreeChange(parentNode, originalChildCount);
+    }
+
+    private Course requireAssignedCourse(String courseId) {
+        if (currentTeacher == null) {
+            throw new IllegalStateException("A teacher must be authenticated to manage course content.");
+        }
+        List<String> assignedCourseIds = currentTeacher.getAsginedCourses();
+        if (assignedCourseIds == null || !assignedCourseIds.contains(courseId)) {
+            throw new IllegalArgumentException("The course is not assigned to the current teacher.");
+        }
+        Course course = courseController.findCourse(courseId);
+        if (course == null) {
+            throw new IllegalArgumentException("The assigned course could not be found.");
+        }
+        return course;
+    }
+
+    private TreeNode<EducativeElement> findNode(
+            TreeNode<EducativeElement> node, String elementId) {
+        if (node == null || node.getData() == null) {
+            return null;
+        }
+        if (node.getData().getId().equals(elementId)) {
+            return node;
+        }
+        for (TreeNode<EducativeElement> child : node.getSons()) {
+            TreeNode<EducativeElement> result = findNode(child, elementId);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private void saveCourseTreeChange(TreeNode<EducativeElement> parentNode, int originalChildCount) {
+        try {
+            courseController.saveChanges();
+        } catch (SavedFailureException e) {
+            while (parentNode.getSons().size() > originalChildCount) {
+                parentNode.getSons().remove(parentNode.getSons().size() - 1);
+            }
+            throw e;
+        }
     }
 
     public List<Course> getCourseList() {
@@ -210,6 +318,24 @@ public class GeneralController {
         }
         String currentLessonId = getCurrentLessonId(courseId);
         return courseController.getPercentOfLessonsComplete(courseId, currentLessonId);
+    }
+
+    public List<Course> sendCourseListAsignedToTeacher() {
+        if (currentTeacher == null) {
+            throw new IllegalStateException("A teacher must be authenticated to view assigned courses.");
+        }
+        List<Course> assignedCourses = new ArrayList<>();
+        List<String> courseIds = currentTeacher.getAsginedCourses();
+        if (courseIds == null) {
+            return assignedCourses;
+        }
+        for (String courseId : courseIds) {
+            Course course = courseController.findCourse(courseId);
+            if (course != null) {
+                assignedCourses.add(course);
+            }
+        }
+        return assignedCourses;
     }
 
     // =========================================================================

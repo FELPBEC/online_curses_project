@@ -48,8 +48,9 @@ public class CourseController {
      * 
      * @param titleCourse Título del nuevo curso.
      * @param descriptionCourse Descripción del nuevo curso.
+     * @return El curso recién creado.
      */
-    public void addCourse(String titleCourse, String descriptionCourse) {
+    public Course addCourse(String titleCourse, String descriptionCourse) {
         String newIdCourse = String.valueOf(getNextCourseIdNumber());
         Course newCourse = new Course();
         newCourse.setId(newIdCourse);
@@ -58,6 +59,7 @@ public class CourseController {
         TreeNode<EducativeElement> rootNode = new TreeNode<>(newCourse);
         newCourse.setRoot(rootNode);
         courseList.add(newCourse);
+        return newCourse;
     }
 
     /**

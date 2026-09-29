@@ -7,6 +7,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <StackPane xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="co.edu.uptc.viewController.RoleSelectionController"
@@ -17,6 +19,11 @@
             <padding>
                 <Insets top="34" right="44" bottom="38" left="44"/>
             </padding>
+            <ImageView fitWidth="150" fitHeight="150" preserveRatio="true">
+                <image>
+                    <Image url="@../images/Logo.png" />
+                </image>
+            </ImageView>
             <HBox alignment="CENTER_RIGHT" maxWidth="Infinity">
                 <children>
                     <ComboBox fx:id="languageSelector" onAction="#onLanguageChanged"

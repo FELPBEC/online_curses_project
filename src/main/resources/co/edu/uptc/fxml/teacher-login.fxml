@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <StackPane xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="co.edu.uptc.viewController.TeacherLoginController"
