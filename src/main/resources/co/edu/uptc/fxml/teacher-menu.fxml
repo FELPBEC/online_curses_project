@@ -68,6 +68,9 @@
                                     <Label fx:id="lblNodeTitle" text="%catalog.node.select" wrapText="true" styleClass="node-title"/>
                                     <Label fx:id="lblNodeType" wrapText="true" styleClass="course-count"/>
                                     <Label fx:id="lblNodeDescription" wrapText="true" styleClass="node-description"/>
+                                    <Button fx:id="btnDeleteNode" text="%teacher.node.delete"
+                                            visible="false" managed="false" onAction="#onDeleteSelectedNode"
+                                            styleClass="boton-dibujado"/>
                                     <Button fx:id="btnCreateModule" text="%teacher.node.createModule" visible="false" managed="false" onAction="#onCreateModule" styleClass="boton-dibujado"/>
                                     <Button fx:id="btnCreateLesson" text="%teacher.node.createLesson" visible="false" managed="false" onAction="#onCreateLesson" styleClass="boton-dibujado"/>
                                     <VBox fx:id="createModuleForm" visible="false" managed="false" spacing="8">

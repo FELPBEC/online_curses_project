@@ -18,7 +18,9 @@ import co.edu.uptc.model.TreeNode;
 import co.edu.uptc.view.App;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -49,6 +51,7 @@ public class TeacherDashboardController {
     @FXML private Label lblNodeTitle;
     @FXML private Label lblNodeType;
     @FXML private Label lblNodeDescription;
+    @FXML private Button btnDeleteNode;
     @FXML private Button btnCreateModule;
     @FXML private Button btnCreateLesson;
     @FXML private VBox createModuleForm;
@@ -217,6 +220,59 @@ public class TeacherDashboardController {
     }
 
     @FXML
+    private void onDeleteSelectedNode() {
+        if (selectedCourse == null || selectedNode == null || selectedNode.getData() == null) {
+            return;
+        }
+
+        EducativeElement element = selectedNode.getData();
+        String title = element.getTitle() == null ? element.getId() : element.getTitle();
+        String confirmationKey = element.getElementType() == EducativeElementType.COURSE
+                ? "teacher.node.delete.confirm.course"
+                : "teacher.node.delete.confirm.message";
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle(App.getMessages().getString("teacher.node.delete.confirm.title"));
+        confirmation.setHeaderText(null);
+        confirmation.setContentText(MessageFormat.format(
+                App.getMessages().getString(confirmationKey), title));
+        ButtonType deleteButton = new ButtonType(
+                App.getMessages().getString("teacher.node.delete.confirm.action"),
+                ButtonType.OK.getButtonData());
+        ButtonType cancelButton = new ButtonType(
+                App.getMessages().getString("teacher.node.delete.confirm.cancel"),
+                ButtonType.CANCEL.getButtonData());
+        confirmation.getButtonTypes().setAll(deleteButton, cancelButton);
+        if (!confirmation.showAndWait().filter(deleteButton::equals).isPresent()) {
+            return;
+        }
+
+        App.getGeneralController().setCurrentCourse(selectedCourse);
+        switch (element.getElementType()) {
+            case COURSE:
+                App.getGeneralController().removeCurrentCourse();
+                coursesListController.clearSelectedCourse();
+                selectedCourse = null;
+                selectedNode = null;
+                App.getGeneralController().setCurrentCourse(null);
+                showCourses();
+                break;
+            case MODULO:
+                App.getGeneralController().removeModule(element.getId());
+                refreshCourseTree(selectedCourse.getId());
+                showNodeActionMessage("teacher.node.delete.success", true);
+                break;
+            case LESSON:
+                App.getGeneralController().removeLesson(element.getId());
+                refreshCourseTree(selectedCourse.getId());
+                showNodeActionMessage("teacher.node.delete.success", true);
+                break;
+            default:
+                throw new IllegalStateException("Unsupported educational element type: "
+                        + element.getElementType());
+        }
+    }
+
+    @FXML
     private void onSaveModule() {
         if (selectedCourse == null || selectedNode == null) {
             return;
@@ -315,6 +371,8 @@ public class TeacherDashboardController {
             lblNodeTitle.setText(App.getMessages().getString("catalog.node.select"));
             lblNodeType.setText("");
             lblNodeDescription.setText("");
+            btnDeleteNode.setVisible(false);
+            btnDeleteNode.setManaged(false);
             btnCreateModule.setVisible(false);
             btnCreateModule.setManaged(false);
             btnCreateLesson.setVisible(false);
@@ -334,6 +392,8 @@ public class TeacherDashboardController {
                     ((Lessons) element).getDuration());
         }
         lblNodeDescription.setText(description);
+        btnDeleteNode.setVisible(true);
+        btnDeleteNode.setManaged(true);
         boolean canCreateModule = element.getElementType() == EducativeElementType.COURSE
                 || element.getElementType() == EducativeElementType.MODULO;
         boolean canCreateLesson = element.getElementType() == EducativeElementType.MODULO;
