@@ -339,7 +339,7 @@ public class GeneralControllerTest {
         courseController.addCourse("POO", "Avanzado");
         courseController.addModule("COURSE-1", "COURSE-1", "Mód 1", "Desc");
         courseController.addLesson("COURSE-1", "MODULE-1", "L1", "Desc", 10.0);
-
+                courseController.addLesson("COURSE-1", "MODULE-1", "L2", "Desc", 10.0);
         Course course = courseController.findCourse("COURSE-1");
         Estudent student = new Estudent(10, "ana", "ana@uptc.edu.co", "pass");
         student.registerCourse("COURSE-1", "LESSON-1");

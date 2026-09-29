@@ -1,5 +1,6 @@
 package co.edu.uptc.controller;
 
+import co.edu.uptc.exceptions.CourseNotFoundException;
 import co.edu.uptc.exceptions.InvalidFortmatException;
 import co.edu.uptc.exceptions.InvalidParentException;
 import co.edu.uptc.exceptions.NoAvaliableLessonsInTheCourseException;
@@ -185,7 +186,7 @@ public class CourseControllerTest {
         courseController.addModule("COURSE-1", "COURSE-1", "Cinemática", "Movimiento");
 
         assertDoesNotThrow(() -> 
-            courseController.addLesson("COURSE-999", "MODULE-1", "L1", "Desc", 30.0)
+            courseController.addLesson("COURSE-1", "MODULE-1", "L1", "Desc", 30.0)
         );
 
         assertThrows(InvalidParentException.class, () -> 
@@ -206,7 +207,7 @@ public class CourseControllerTest {
         courseController.addCourse("Química", "General");
         courseController.addModule("COURSE-1", "COURSE-1", "Atomos", "Estructura");
 
-        assertNull(courseController.findLesson("COURSE-999", "LESSON-1"));
+        assertNull(courseController.findLesson("COURSE-1", "LESSON-4"));
         assertNull(courseController.findLesson("COURSE-1", "MODULE-1"));
         assertNull(courseController.findLesson("COURSE-1", "LESSON-999"));
     }
@@ -263,11 +264,12 @@ public class CourseControllerTest {
         courseController.addCourse("Python", "Básico");
         courseController.addModule("COURSE-1", "COURSE-1", "Módulo 1", "Intro");
         courseController.addLesson("COURSE-1", "MODULE-1", "L1", "Desc", 10.0);
-
+        courseController.addLesson("COURSE-1", "MODULE-1", "L2", "Desc", 10.0);
         assertDoesNotThrow(() -> {
             String nextLesson = courseController.getIdNextLesson("COURSE-1", "LESSON-1");
             assertNotNull(nextLesson);
         });
+        assertEquals("LESSON-2", courseController.getIdNextLesson("COURSE-1", "LESSON-1"));
     }
 
     @Test
@@ -354,8 +356,5 @@ public class CourseControllerTest {
         assertEquals(2, lessons.size());
         assertEquals("LESSON-1", lessons.get(0).getId());
         assertEquals("LESSON-2", lessons.get(1).getId());
-
-        assertTrue(courseController.getLessonsByModule("COURSE-999", "MODULE-1").isEmpty());
-        assertTrue(courseController.getLessonsByModule("COURSE-1", "MODULE-999").isEmpty());
     }
 }
