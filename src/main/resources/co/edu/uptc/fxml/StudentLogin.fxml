@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- Ajusta la ruta del css según tu estructura de resources -->
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="co.edu.uptc.viewController.StudentLoginController"
+           styleClass="fondo-cuaderno" stylesheets="@../css/styles.css"
+           prefWidth="900" prefHeight="600">
+
+    <VBox alignment="CENTER" spacing="14" maxWidth="380" StackPane.alignment="CENTER">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <!-- Título (cambia entre login y registro) -->
+        <Label fx:id="lblTitle" style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+        <!-- Solo visible en modo registro -->
+        <VBox fx:id="registerFields" spacing="14">
+            <TextField fx:id="txtUserName" promptText="%login.username"/>
+        </VBox>
+
+        <TextField fx:id="txtEmail" promptText="%login.email"/>
+        <PasswordField fx:id="txtPassword" promptText="%login.password"/>
+
+        <!-- Solo visible en modo registro -->
+        <VBox fx:id="confirmFields" spacing="6">
+            <PasswordField fx:id="txtConfirmPassword" promptText="%login.confirm"/>
+            <Label text="%login.password.hint" wrapText="true" style="-fx-font-size: 11px;"/>
+        </VBox>
+
+        <!-- Mensajes de error -->
+        <Label fx:id="lblMessage" wrapText="true" style="-fx-text-fill: #b00020;"/>
+
+        <Button fx:id="btnPrimary" styleClass="boton-dibujado" onAction="#onPrimaryAction"/>
+        <Button fx:id="btnSwitchMode" styleClass="boton-dibujado" onAction="#onSwitchMode"/>
+        <Button text="%login.language" styleClass="boton-dibujado" onAction="#onToggleLanguage"/>
+    </VBox>
+</StackPane>

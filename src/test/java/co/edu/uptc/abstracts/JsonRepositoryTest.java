@@ -62,7 +62,7 @@ public class JsonRepositoryTest {
     }
 
     @Test
-    @DisplayName("Debe retornar lista vacía si el archivo contiene JSON corrupto o deserializa nulo")
+    @DisplayName("Debe informar un error si el archivo contiene JSON corrupto")
     public void testSendAllCorruptJson(@TempDir Path tempDir) throws IOException {
         File corruptFile = tempDir.resolve("corrupt.json").toFile();
         try (FileWriter writer = new FileWriter(corruptFile)) {
@@ -70,9 +70,32 @@ public class JsonRepositoryTest {
         }
 
         ConcreteJsonRepository repository = new ConcreteJsonRepository(corruptFile.getAbsolutePath(), stringListType);
-        List<String> result = repository.sendAll();
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertThrows(SavedFailureException.class, repository::sendAll);
+    }
+
+    @Test
+    @DisplayName("Debe retornar lista vacía cuando el archivo contiene JSON nulo")
+    public void testSendAllJsonNull(@TempDir Path tempDir) throws IOException {
+        File nullFile = tempDir.resolve("null.json").toFile();
+        try (FileWriter writer = new FileWriter(nullFile)) {
+            writer.write("null");
+        }
+
+        ConcreteJsonRepository repository = new ConcreteJsonRepository(nullFile.getAbsolutePath(), stringListType);
+
+        assertTrue(repository.sendAll().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Debe crear las carpetas necesarias antes de guardar")
+    public void testSaveAllCreatesParentDirectories(@TempDir Path tempDir) {
+        Path file = tempDir.resolve("nested").resolve("students.json");
+        ConcreteJsonRepository repository = new ConcreteJsonRepository(file.toString(), stringListType);
+
+        repository.saveAll(List.of("Estudiante"));
+
+        assertTrue(file.toFile().isFile());
+        assertEquals(List.of("Estudiante"), repository.sendAll());
     }
 
     @Test

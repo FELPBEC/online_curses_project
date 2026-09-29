@@ -51,6 +51,9 @@ public class Estudent extends User{
      * @param idFirstLesson id de la primera lección que contiene el curso
      */
     public void registerCourse(String idCourse, String idFirstLesson){
+        if (coursesProgress == null) {
+            coursesProgress = new HashMap<>();
+        }
         coursesProgress.put(idCourse, new CourseProgress(idFirstLesson));
     }
     /**Método para obtener la id de la lección en la que va el estudiante de un determinado curso
@@ -79,7 +82,7 @@ public class Estudent extends User{
         coursesProgress.get(idCourse).setCompleteState(true);
     }
     public boolean isRegisterOnCourse(String idCourse){
-        return coursesProgress.containsKey(idCourse);
+        return coursesProgress != null && coursesProgress.containsKey(idCourse);
     }
     
 }

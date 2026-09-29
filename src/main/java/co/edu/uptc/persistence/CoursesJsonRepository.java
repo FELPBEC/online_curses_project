@@ -18,7 +18,7 @@ public class CoursesJsonRepository extends JsonRepository<Course>{
      * @param filePath el nombre del archivo donde se guardaran los cursos
      */
     public CoursesJsonRepository(String filePath) {
-        super(filePath, new TypeToken<List<Course>>(){}.getType());
+        super(filePath, new TypeToken<List<Course>>(){}.getType(), CourseJsonAdapter.createGson());
     }
     /**Método para guardar la lista de cursos en un archivo Json
      * 

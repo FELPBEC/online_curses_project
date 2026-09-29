@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="co.edu.uptc.viewController.TeacherLoginController"
+           styleClass="fondo-cuaderno" stylesheets="@../styles/styles.css"
+           prefWidth="900" prefHeight="640">
+    <children>
+        <VBox alignment="CENTER" spacing="16" maxWidth="410" styleClass="auth-card">
+            <padding>
+                <Insets top="32" right="38" bottom="32" left="38"/>
+            </padding>
+            <HBox alignment="CENTER_RIGHT" maxWidth="Infinity">
+                <children>
+                    <ComboBox fx:id="languageSelector" onAction="#onLanguageChanged"
+                              accessibleText="%common.language" styleClass="language-selector"/>
+                </children>
+            </HBox>
+            <Label text="%teacher.login.brand" styleClass="auth-brand"/>
+            <Label text="%teacher.login.title" styleClass="auth-title"/>
+            <Label text="%teacher.login.subtitle" wrapText="true" styleClass="auth-subtitle"/>
+            <TextField fx:id="txtIdentifier" promptText="%teacher.login.identifier"
+                       styleClass="auth-input"/>
+            <PasswordField fx:id="txtPassword" promptText="%teacher.login.password"
+                           styleClass="auth-input"/>
+            <Label fx:id="lblMessage" wrapText="true" styleClass="auth-message"/>
+            <Button text="%teacher.login.action" onAction="#onLogin"
+                    maxWidth="Infinity" styleClass="boton-dibujado"/>
+            <Button text="%common.back" onAction="#onBack"
+                    maxWidth="Infinity" styleClass="boton-dibujado"/>
+        </VBox>
+    </children>
+</StackPane>
