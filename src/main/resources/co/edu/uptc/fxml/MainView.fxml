@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+
+<!-- 1. El StackPane raíz cubre toda la pantalla automáticamente -->
+<StackPane xmlns="http://javafx.com/javafx/17" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            stylesheets="@../styles/styles.css"
+            styleClass="fondo-portada" 
+            prefHeight="600.0" prefWidth="800.0"
+            fx:controller="co.edu.uptc.viewController.MainViewController">
+            
+    <VBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20;">
+        <Label text="ÁRBOL DE LA SABIDURÍA" styleClass="titulo-Principal"></Label>
+        <Label text="Selecciona tu rol:" styleClass="titulo-secundario"></Label>
+        <HBox spacing="15.0" alignment="TOP_CENTER" style="-fx-padding: 20;">
+                <Button text="Estudiante" styleClass="boton-dibujado" onAction="#goToStudentLogin"></Button>
+        </HBox>
+    </VBox>
+    
+</StackPane>

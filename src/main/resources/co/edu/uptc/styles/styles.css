@@ -1,3 +1,19 @@
+.fondo-portada {
+    -fx-background-image: 
+        url("../images/fondoLibretaRelleno.png"),      
+        url("../images/fondoLibretaSuperior.png");  
+
+    -fx-background-repeat: 
+        repeat,       
+        repeat-x;   
+
+    -fx-background-position: 
+        left top, 
+        left top;
+}
+
+
+
 .fondo-cuaderno {
     -fx-background-image: 
         url("../images/fondoGeneral.png"),      
@@ -35,11 +51,10 @@
     
     /* 3. El Padding: Debe ser mayor al border-width para que el texto quede centrado en el área beige */
     -fx-padding: 12 24 12 24;
-    
-    -fx-cursor: hand;
-    -fx-font-family: "System"; /* Cambia a tu fuente estilo 'marcador' si tienes una */
+
+    -fx-font-family: 'Caveat';
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #000000;
 }
 
 /* Efecto hover ligero */
@@ -91,4 +106,66 @@
 .memo-naranja { -fx-background-image: url("../images/plegableNaranjaNormal.png"); }
 .memo-naranja:pressed { -fx-background-image: url("../images/plegableNaranjaPresionado.png"); }
 
+.hoja-desplegable {
+    -fx-background-image: url("../images/MenuTextura.png");
+    -fx-background-repeat: repeat-x; /* Se repite infinitamente a lo largo */
+    -fx-background-position: top left;
+    
+    -fx-pref-height: 240px;
+    -fx-max-height: 240px;
+    -fx-max-width: Infinity;
+    -fx-padding: 25 40 20 40;
+}
 
+.boton-menu{
+     -fx-background-color: transparent; 
+      -fx-border-image-source: url("../images/botonMenu.png");
+}
+.boton-menu:hover {
+    -fx-opacity: 0.9;
+}
+.boton-menu:pressed{
+    -fx-border-image-source: url("../images/botonMenuPulsado.png");
+}
+
+
+/*SECCIÓN DE TIPOGRAFÍAS*/
+/* 1. Registrar las fuentes personalizadas */
+@font-face {
+    font-family: 'Caveat';
+    src: url('../fonts/Caveat-VariableFont_wght.ttf');
+}
+
+@font-face {
+    font-family: 'GloriaHallelujah';
+    src: url('../fonts/GloriaHallelujah-Regular.ttf');
+}
+
+/* 2. Aplicar a los componentes de la interfaz */
+
+/* Títulos principales (ej. nombre del curso en memoficha) */
+.titulo-curso {
+    -fx-font-family: 'GloriaHallelujah';
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+}
+
+/* Texto de párrafos o descripciones */
+.texto-libreta {
+    -fx-font-family: 'Caveat';
+    -fx-font-size: 15px;
+    -fx-text-fill: #333333;
+}
+.titulo-Principal {
+    -fx-font-family: 'GloriaHallelujah';
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+.titulo-secundario{
+    -fx-font-family: 'GloriaHallelujah';
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}

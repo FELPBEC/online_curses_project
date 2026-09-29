@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" 
+           xmlns:fx="http://javafx.com/fxml/1"
+           stylesheets="@../styles/styles.css"
+           styleClass="fondo-cuaderno"
+           fx:controller="co.edu.uptc.viewController.MenuDesplegableController">
+
+    <!-- CAPA 1 (Fondo): Contenido habitual -->
+    <VBox alignment="CENTER" spacing="20">
+        <Button fx:id="btnToggleMenu" styleClass="boton-menu" onAction="#toggleMenu"/>
+        <!-- ... resto de tu contenido ... -->
+    </VBox>
+
+    <!-- CAPA 2 (Superpuesta): El Menú Hoja Desplegable -->
+    <HBox fx:id="menuHoja" 
+          styleClass="hoja-desplegable" 
+          maxWidth="400" 
+          maxHeight="250" 
+          alignment="TOP_CENTER" 
+          StackPane.alignment="BOTTOM_CENTER">
+        
+        <!-- Botones de Estudiante -->
+        <Button fx:id="btnLookMyCourses" text="Mis Cursos" styleClass="boton-dibujo" onAction="#goToMyCourses"/>
+        <Button fx:id="btnSearchNewCourses" text="Buscar Cursos" styleClass="boton-dibujo" onAction="#searchCourses"/>
+
+        <!-- Botones de Profesor -->
+        <Button fx:id="btnCreateCourse" text="Crear Nuevo Curso" styleClass="boton-dibujo" onAction="#createCourses"/>
+        <Button fx:id="btnManageCourses" text="Manejar Cursos" styleClass="boton-dibujo" onAction="#manageCourses"/>
+
+        <!-- Botón Común (Para ambos) -->
+        <Button fx:id="btnLogOut" text="Cerrar Sesión" styleClass="boton-dibujo" onAction="#logOut"/>
+
+    </HBox>
+
+</StackPane>
