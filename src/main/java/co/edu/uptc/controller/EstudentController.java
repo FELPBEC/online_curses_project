@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uptc.exceptions.CredentialsAlreadyExistException;
+import co.edu.uptc.exceptions.SavedFailureException;
 import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.exceptions.InvalidFortmatException;
 import co.edu.uptc.exceptions.WrongPasswordException;
@@ -65,7 +66,7 @@ public class EstudentController {
     private int sendIdByEmail(String email){
        int id=0;
         for (int i = 0; i < estudentList.size(); i++) {
-            if (email.equals(estudentList.get(i).getEmail())) {
+           if (email.equalsIgnoreCase(estudentList.get(i).getEmail())) {
                 id=estudentList.get(i).getId();
                 break;
             }
@@ -77,14 +78,13 @@ public class EstudentController {
      * @return nueva id del nuevo estudiante
      */
     private int sendNewId(){
-        //Valor inicial para todas las IDs
-        int biggestID=1;
+        int biggestID=0;
         for (int i = 0; i < estudentList.size(); i++) {
             if (estudentList.get(i).getId()>biggestID) {
                 biggestID=estudentList.get(i).getId();
             }
         }
-        return biggestID;
+        return biggestID + 1;
     }
     //REGISTRAR
 
@@ -99,14 +99,21 @@ public class EstudentController {
      * @exception InvalidFortmatException excepción que surge si la contraseña no tiene el formato requerido
      * @exception CredentialsAlreadyExistException excepción que surge si las credenciales, ya sea correo o nombre de usuario ya existen
      */
-    public void registerEstudent(String userName,String email, String password )throws InvalidFortmatException, CredentialsAlreadyExistException{
+    public Estudent registerEstudent(String userName,String email, String password )throws InvalidFortmatException, CredentialsAlreadyExistException{
         if(!security.isValidFormat(password)) throw new InvalidFortmatException("El formato de la contraseña no es válido");
-        if(sendIdByEmail(email)==0)throw new CredentialsAlreadyExistException("El correo ingresado ya existe");
-        if(sendIdByUserName(userName)==0)throw new CredentialsAlreadyExistException("El nombre de usuario ingresado ya existe");
+        if(sendIdByEmail(email)!=0)throw new CredentialsAlreadyExistException("El correo ingresado ya existe");
+        if(sendIdByUserName(userName)!=0)throw new CredentialsAlreadyExistException("El nombre de usuario ingresado ya existe");
         int newId= sendNewId();
         String securityPassword=security.encrypt(password);
-        estudentList.add(new Estudent(newId, userName, email, securityPassword));
-        repository.saveAll(estudentList);
+        Estudent estudent = new Estudent(newId, userName, email, securityPassword);
+        estudentList.add(estudent);
+        try {
+            repository.saveAll(estudentList);
+        } catch (SavedFailureException e) {
+            estudentList.remove(estudent);
+            throw e;
+        }
+        return estudent;
     }
     //INGRESAR
     public Estudent joinEstudentAcount(String userOrEmail, String password) throws UserNotFoundException,WrongPasswordException{

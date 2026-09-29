@@ -36,6 +36,8 @@ public class GeneralControllerTest {
 
     private static class DummyRepository<T> implements Repository<T> {
         private final List<T> list = new ArrayList<>();
+        private boolean saveCalled;
+        private boolean failOnSave;
 
         @Override
         public List<T> sendAll() {
@@ -44,7 +46,10 @@ public class GeneralControllerTest {
 
         @Override
         public void saveAll(List<T> list) {
-            // No-op para pruebas
+            saveCalled = true;
+            if (failOnSave) {
+                throw new co.edu.uptc.exceptions.SavedFailureException("No se pudo guardar", null);
+            }
         }
     }
 
@@ -130,6 +135,77 @@ public class GeneralControllerTest {
         generalController.estudentLogin("est1@uptc.edu.co", "Pass123!");
         assertNotNull(generalController.getCurrentEstudent());
         assertEquals("estudiante1", generalController.getCurrentEstudent().getUserName());
+    }
+
+    @Test
+    @DisplayName("Debe inscribir al estudiante, guardar el progreso y evitar duplicados")
+    public void testRegisterCurrentStudentOnCoursePersistsEnrollment() {
+        courseController.addCourse("Programación", "Fundamentos");
+        courseController.addModule("COURSE-1", "COURSE-1", "Módulo", "Descripción");
+        courseController.addLesson("COURSE-1", "MODULE-1", "Primera lección", "Descripción", 10);
+        Estudent student = new Estudent(3, "estudiante", "estudiante@uptc.edu.co", "hash");
+        generalController.setCurrentEstudent(student);
+
+        assertTrue(generalController.registerCurrentStudentOnCourse("COURSE-1"));
+        assertEquals("LESSON-1", student.getLessonOnCourse("COURSE-1"));
+        assertTrue(estudentRepo.saveCalled);
+        assertFalse(generalController.registerCurrentStudentOnCourse("COURSE-1"));
+    }
+
+    @Test
+    @DisplayName("Debe avanzar el progreso y marcar el curso completado al completar la última lección")
+    public void testCompleteCurrentStudentLessonAdvancesAndCompletesCourse() {
+        courseController.addCourse("Java", "Curso de prueba");
+        courseController.addModule("COURSE-1", "COURSE-1", "Fundamentos", "Módulo");
+        courseController.addLesson("COURSE-1", "MODULE-1", "Variables", "Lección uno", 10);
+        courseController.addLesson("COURSE-1", "MODULE-1", "Condicionales", "Lección dos", 15);
+        Estudent student = new Estudent(8, "ana", "ana@uptc.edu.co", "hash");
+        generalController.setCurrentEstudent(student);
+        generalController.registerCurrentStudentOnCourse("COURSE-1");
+
+        assertFalse(generalController.completeCurrentStudentLesson("COURSE-1"));
+        assertEquals("LESSON-2", generalController.getCurrentLessonId("COURSE-1"));
+        assertFalse(generalController.isCurrentStudentCourseComplete("COURSE-1"));
+        assertTrue(generalController.completeCurrentStudentLesson("COURSE-1"));
+        assertTrue(generalController.isCurrentStudentCourseComplete("COURSE-1"));
+        assertTrue(estudentRepo.saveCalled);
+    }
+
+    @Test
+    @DisplayName("Las estadísticas solo cuentan las lecciones completadas")
+    public void testCurrentStudentCourseProgressPercent() {
+        courseController.addCourse("Java", "Curso de prueba");
+        courseController.addModule("COURSE-1", "COURSE-1", "Fundamentos", "Módulo");
+        courseController.addLesson("COURSE-1", "MODULE-1", "Variables", "Lección uno", 10);
+        courseController.addLesson("COURSE-1", "MODULE-1", "Condicionales", "Lección dos", 15);
+        Estudent student = new Estudent(9, "ana", "ana@uptc.edu.co", "hash");
+        generalController.setCurrentEstudent(student);
+        generalController.registerCurrentStudentOnCourse("COURSE-1");
+
+        assertEquals(0.0, generalController.getCurrentStudentCourseProgressPercent("COURSE-1"));
+        generalController.completeCurrentStudentLesson("COURSE-1");
+        assertEquals(50.0, generalController.getCurrentStudentCourseProgressPercent("COURSE-1"));
+        generalController.completeCurrentStudentLesson("COURSE-1");
+        assertEquals(100.0, generalController.getCurrentStudentCourseProgressPercent("COURSE-1"));
+    }
+
+    @Test
+    @DisplayName("Debe restaurar la lección actual si falla el guardado del progreso")
+    public void testCompleteCurrentStudentLessonRollsBackWhenSaveFails() {
+        courseController.addCourse("Java", "Curso de prueba");
+        courseController.addModule("COURSE-1", "COURSE-1", "Fundamentos", "Módulo");
+        courseController.addLesson("COURSE-1", "MODULE-1", "Variables", "Lección uno", 10);
+        courseController.addLesson("COURSE-1", "MODULE-1", "Condicionales", "Lección dos", 15);
+        Estudent student = new Estudent(8, "ana", "ana@uptc.edu.co", "hash");
+        generalController.setCurrentEstudent(student);
+        generalController.registerCurrentStudentOnCourse("COURSE-1");
+        estudentRepo.failOnSave = true;
+
+        assertThrows(co.edu.uptc.exceptions.SavedFailureException.class,
+                () -> generalController.completeCurrentStudentLesson("COURSE-1"));
+
+        assertEquals("LESSON-1", generalController.getCurrentLessonId("COURSE-1"));
+        assertFalse(generalController.isCurrentStudentCourseComplete("COURSE-1"));
     }
 
     // =========================================================================

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.edu.uptc.exceptions.NoAvaliableLessonsInTheCourseException;
+import co.edu.uptc.exceptions.SavedFailureException;
 import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.exceptions.WrongPasswordException;
 import co.edu.uptc.interfaces.EducativeElement;
 import co.edu.uptc.interfaces.EducativeElementType;
 import co.edu.uptc.model.Course;
+import co.edu.uptc.model.CourseProgress;
 import co.edu.uptc.model.Estudent;
 import co.edu.uptc.model.Teacher;
 import co.edu.uptc.persistence.CoursesJsonRepository;
@@ -86,8 +88,119 @@ public class GeneralController {
         }
     }
 
+    public Estudent registerEstudent(String userName, String email, String password) {
+        Estudent estudent = estudentController.registerEstudent(userName, email, password);
+        setCurrentEstudent(estudent);
+        return estudent;
+    }
+
     public void setCurrentCourseById(String idCourse) {
         currentCourse = courseController.findCourse(idCourse);
+    }
+
+    public List<Course> getCourseList() {
+        return new ArrayList<>(courseController.getCourseList());
+    }
+
+    public List<Course> getCoursesForCurrentStudent(boolean enrolled) {
+        if (currentEstudent == null) {
+            throw new IllegalStateException("A student must be authenticated to browse courses.");
+        }
+        List<Course> courses = new ArrayList<>();
+        for (Course course : courseController.getCourseList()) {
+            if (course != null && currentEstudent.isRegisterOnCourse(course.getId()) == enrolled) {
+                courses.add(course);
+            }
+        }
+        return courses;
+    }
+
+    public boolean registerCurrentStudentOnCourse(String courseId) {
+        if (currentEstudent == null) {
+            throw new IllegalStateException("A student must be authenticated to enroll in a course.");
+        }
+        Course course = courseController.findCourse(courseId);
+        if (course == null) {
+            throw new IllegalArgumentException("Course does not exist: " + courseId);
+        }
+        if (currentEstudent.isRegisterOnCourse(courseId)) {
+            return false;
+        }
+
+        String firstLessonId = courseController.getIdFirstLesson(courseId);
+        currentCourse = course;
+        currentEstudent.registerCourse(courseId, firstLessonId);
+        try {
+            estudentController.saveAll();
+        } catch (SavedFailureException e) {
+            currentEstudent.getCoursesProgress().remove(courseId);
+            throw e;
+        }
+        return true;
+    }
+
+    public boolean completeCurrentStudentLesson(String courseId) {
+        if (currentEstudent == null || !currentEstudent.isRegisterOnCourse(courseId)) {
+            throw new IllegalStateException("The current student is not enrolled in this course.");
+        }
+        Course course = courseController.findCourse(courseId);
+        if (course == null) {
+            throw new IllegalArgumentException("Course does not exist: " + courseId);
+        }
+        CourseProgress progress = currentEstudent.getCoursesProgress().get(courseId);
+        if (progress.isCompleteState()) {
+            return true;
+        }
+
+        String previousLessonId = progress.getIdLesson();
+        boolean completed;
+        try {
+            String nextLessonId = courseController.getIdNextLesson(courseId, previousLessonId);
+            progress.setIdLesson(nextLessonId);
+            completed = false;
+        } catch (NoAvaliableLessonsInTheCourseException e) {
+            progress.setCompleteState(true);
+            completed = true;
+        }
+
+        try {
+            estudentController.saveAll();
+        } catch (SavedFailureException e) {
+            progress.setIdLesson(previousLessonId);
+            progress.setCompleteState(false);
+            throw e;
+        }
+        currentCourse = course;
+        return completed;
+    }
+
+    public String getCurrentLessonId(String courseId) {
+        if (currentEstudent == null || !currentEstudent.isRegisterOnCourse(courseId)) {
+            return null;
+        }
+        return currentEstudent.getCoursesProgress().get(courseId).getIdLesson();
+    }
+
+    public boolean isCurrentStudentCourseComplete(String courseId) {
+        if (currentEstudent == null || !currentEstudent.isRegisterOnCourse(courseId)) {
+            return false;
+        }
+        return currentEstudent.getCoursesProgress().get(courseId).isCompleteState();
+    }
+
+    public double getCurrentStudentCourseProgressPercent(String courseId) {
+        if (currentEstudent == null || !currentEstudent.isRegisterOnCourse(courseId)) {
+            return 0.0;
+        }
+        Course course = courseController.findCourse(courseId);
+        if (course == null) {
+            return 0.0;
+        }
+        if (isCurrentStudentCourseComplete(courseId)) {
+            return 100.0;
+        }
+        String currentLessonId = getCurrentLessonId(courseId);
+        return courseController.getPercentOfLessonsComplete(courseId, currentLessonId);
     }
 
     // =========================================================================

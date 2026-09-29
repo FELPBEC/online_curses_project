@@ -42,6 +42,7 @@ public class CourseTreeView extends ScrollPane {
     private final Pane canvasPane;
     private TreeNode<EducativeElement> currentRoot;
     private TreeNode<EducativeElement> selectedNode;
+    private String highlightedNodeId;
 
     private Consumer<TreeNode<EducativeElement>> onNodeSelectedListener;
     private final Map<TreeNode<EducativeElement>, Point> positions = new HashMap<>();
@@ -52,6 +53,7 @@ public class CourseTreeView extends ScrollPane {
     public CourseTreeView() {
         this.canvasPane = new Pane();
         this.canvasPane.setMinSize(800, 500);
+        getStyleClass().add("course-tree-scroll-pane");
 
         // Permite deseleccionar al hacer clic en el fondo del lienzo
         this.canvasPane.setOnMouseClicked(event -> {
@@ -62,8 +64,10 @@ public class CourseTreeView extends ScrollPane {
 
         setContent(canvasPane);
         setPannable(true); // Permite arrastrar el lienzo con el ratón
-        setFitToWidth(true);
-        setFitToHeight(true);
+        setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+        setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+        setFitToWidth(false);
+        setFitToHeight(false);
         setStyle("-fx-background-color: transparent; -fx-background: #ffffff;");
     }
 
@@ -90,6 +94,23 @@ public class CourseTreeView extends ScrollPane {
         drawEdges(root);
         drawNodes(root);
         adjustCanvasSize();
+    }
+
+    public void setHighlightedNodeId(String nodeId) {
+        highlightedNodeId = nodeId;
+        if (currentRoot != null) {
+            render(currentRoot);
+        }
+    }
+
+    public void selectNodeById(String nodeId) {
+        selectedNode = findNode(currentRoot, nodeId);
+        if (currentRoot != null) {
+            render(currentRoot);
+        }
+        if (onNodeSelectedListener != null) {
+            onNodeSelectedListener.accept(selectedNode);
+        }
     }
 
     /**
@@ -183,7 +204,13 @@ public class CourseTreeView extends ScrollPane {
         Circle circle = new Circle(position.x, position.y, NODE_RADIUS);
 
         // Estilo de selección
-        if (node.equals(selectedNode)) {
+        boolean isCurrentLesson = element.getElementType() == EducativeElementType.LESSON
+                && element.getId().equals(highlightedNodeId);
+        if (isCurrentLesson) {
+            circle.setStroke(Color.ORANGE);
+            circle.setStrokeWidth(4);
+            circle.setFill(Color.GOLD);
+        } else if (node.equals(selectedNode)) {
             circle.setStroke(Color.RED);
             circle.setStrokeWidth(3.5);
         } else {
@@ -191,8 +218,10 @@ public class CourseTreeView extends ScrollPane {
             circle.setStrokeWidth(1.5);
         }
 
-        // Color por tipo de elemento
-        if (element.getElementType() == EducativeElementType.COURSE) {
+        // Color por tipo de elemento; el borde dorado señala la lección pendiente.
+        if (isCurrentLesson) {
+            circle.setFill(Color.GOLD);
+        } else if (element.getElementType() == EducativeElementType.COURSE) {
             circle.setFill(Color.LIGHTBLUE);
         } else if (element.getElementType() == EducativeElementType.MODULO) {
             circle.setFill(Color.LIGHTGREEN);
@@ -284,6 +313,25 @@ public class CourseTreeView extends ScrollPane {
     private String truncateText(String text, int maxLength) {
         if (text.length() <= maxLength) return text;
         return text.substring(0, maxLength - 1) + "…";
+    }
+
+    private TreeNode<EducativeElement> findNode(
+            TreeNode<EducativeElement> node, String nodeId) {
+        if (node == null || nodeId == null) {
+            return null;
+        }
+        if (node.getData() != null && nodeId.equals(node.getData().getId())) {
+            return node;
+        }
+        if (node.getSons() != null) {
+            for (TreeNode<EducativeElement> son : node.getSons()) {
+                TreeNode<EducativeElement> found = findNode(son, nodeId);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
     }
 
     private static class Point {
