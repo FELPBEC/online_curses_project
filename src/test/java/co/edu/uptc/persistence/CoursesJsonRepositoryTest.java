@@ -1,6 +1,10 @@
 package co.edu.uptc.persistence;
 
 import co.edu.uptc.model.Course;
+import co.edu.uptc.interfaces.EducativeElement;
+import co.edu.uptc.model.Lessons;
+import co.edu.uptc.model.Module;
+import co.edu.uptc.model.TreeNode;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,6 +72,41 @@ public class CoursesJsonRepositoryTest {
             assertEquals("COURSE-2", loadedCourses.get(1).getId());
             assertEquals("Estructuras de Datos", loadedCourses.get(1).getTitle());
 
+        } finally {
+            Files.deleteIfExists(file);
+        }
+    }
+
+    @Test
+    @DisplayName("Debe guardar y restaurar el árbol del curso con módulos y lecciones")
+    void shouldSaveAndLoadCourseTree() throws Exception {
+        Path file = Files.createTempFile("course-tree-test", ".json");
+
+        try {
+            CoursesJsonRepository repository = new CoursesJsonRepository(file.toString());
+            Course course = new Course();
+            course.setId("7");
+            course.setTitle("Programación");
+            course.setDescription("Fundamentos");
+            TreeNode<EducativeElement> root = new TreeNode<>(course);
+            course.setRoot(root);
+
+            Module module = new Module("3", "Variables", "Tipos de datos");
+            TreeNode<EducativeElement> moduleNode = new TreeNode<>(module);
+            root.addSon(moduleNode);
+            moduleNode.addSon(new TreeNode<EducativeElement>(
+                    new Lessons("5", "Tipos primitivos", "Descripción", 20)));
+            repository.saveAll(List.of(course));
+
+            Course loaded = repository.sendAll().get(0);
+
+            assertEquals("COURSE-7", loaded.getId());
+            assertInstanceOf(Course.class, loaded.getRoot().getData());
+            assertInstanceOf(Module.class, loaded.getRoot().getSons().get(0).getData());
+            assertInstanceOf(Lessons.class,
+                    loaded.getRoot().getSons().get(0).getSons().get(0).getData());
+            assertEquals("LESSON-5", ((Lessons) loaded.getRoot().getSons().get(0)
+                    .getSons().get(0).getData()).getId());
         } finally {
             Files.deleteIfExists(file);
         }

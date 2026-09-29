@@ -1,17 +1,21 @@
 package co.edu.uptc.controller;
 
 import co.edu.uptc.exceptions.CredentialsAlreadyExistException;
+import co.edu.uptc.exceptions.SavedFailureException;
 import co.edu.uptc.exceptions.InvalidFortmatException;
 import co.edu.uptc.exceptions.UserNotFoundException;
 import co.edu.uptc.exceptions.WrongPasswordException;
 import co.edu.uptc.interfaces.Repository;
 import co.edu.uptc.model.Estudent;
+import co.edu.uptc.persistence.EstudentJsonRepository;
 import co.edu.uptc.util.PasswordSecurityService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +34,7 @@ public class EstudentControllerTest {
     private static class DummyEstudentRepository implements Repository<Estudent> {
         private final List<Estudent> students = new ArrayList<>();
         private boolean saveCalled = false;
+        private boolean failOnSave;
 
         @Override
         public List<Estudent> sendAll() {
@@ -39,10 +44,17 @@ public class EstudentControllerTest {
         @Override
         public void saveAll(List<Estudent> list) {
             this.saveCalled = true;
+            if (failOnSave) {
+                throw new SavedFailureException("No se pudo guardar", null);
+            }
         }
 
         public boolean isSaveCalled() {
             return saveCalled;
+        }
+
+        public void setFailOnSave(boolean failOnSave) {
+            this.failOnSave = failOnSave;
         }
     }
 
@@ -110,23 +122,76 @@ public class EstudentControllerTest {
     @Test
     @DisplayName("Debe validar las credenciales duplicadas al registrar estudiante")
     public void testRegisterEstudentCredentialsExceptions() {
-        // Formato de contraseña válido
         String validPass = "Pass1234!";
 
-        // Si el correo no existe en la lista, la implementación lanza CredentialsAlreadyExistException por validación inversa
         assertThrows(CredentialsAlreadyExistException.class, () ->
-            estudentController.registerEstudent("un_usuario", "no_existe@uptc.edu.co", validPass)
+            estudentController.registerEstudent("otro_usuario", "juan@uptc.edu.co", validPass)
+        );
+        assertThrows(CredentialsAlreadyExistException.class, () ->
+            estudentController.registerEstudent("otro_usuario", "JUAN@UPTC.EDU.CO", validPass)
         );
 
-        // Si existe el correo pero el nombre de usuario no existe
         assertThrows(CredentialsAlreadyExistException.class, () ->
-            estudentController.registerEstudent("no_existe_username", "juan@uptc.edu.co", validPass)
+            estudentController.registerEstudent("juan_perez", "nuevo@uptc.edu.co", validPass)
         );
 
-        // Registro exitoso cuando tanto el email como el usuario ya coinciden en aux
-        assertDoesNotThrow(() ->
-            estudentController.registerEstudent("juan_perez", "juan@uptc.edu.co", validPass)
-        );
+        assertDoesNotThrow(() -> estudentController.registerEstudent(
+                "nuevo_usuario", "nuevo@uptc.edu.co", validPass));
+    }
+
+    @Test
+    @DisplayName("Debe crear estudiantes con un ID nuevo y almacenar la contraseña cifrada")
+    public void testRegisterEstudentCreatesAccount() {
+        Estudent student = estudentController.registerEstudent(
+                "nuevo_usuario", "nuevo@uptc.edu.co", "Pass1234!");
+
+        assertEquals(103, student.getId());
+        assertEquals("nuevo_usuario", student.getUserName());
+        assertTrue(securityService.verify("Pass1234!", student.getPassword()));
+        assertTrue(dummyRepository.isSaveCalled());
+    }
+
+    @Test
+    @DisplayName("Debe iniciar los IDs desde uno cuando no hay estudiantes")
+    public void testRegisterFirstEstudentStartsIdAtOne() {
+        estudentController.setEstudentList(new ArrayList<>());
+
+        Estudent student = estudentController.registerEstudent(
+                "primer_usuario", "primero@uptc.edu.co", "Pass1234!");
+
+        assertEquals(1, student.getId());
+    }
+
+    @Test
+    @DisplayName("Debe retirar de memoria la cuenta si falla su persistencia")
+    public void testRegisterEstudentRollsBackWhenSaveFails() {
+        dummyRepository.setFailOnSave(true);
+
+        assertThrows(SavedFailureException.class, () -> estudentController.registerEstudent(
+                "nuevo_usuario", "nuevo@uptc.edu.co", "Pass1234!"));
+
+        assertEquals(2, estudentController.getEstudentList().size());
+    }
+
+    @Test
+    @DisplayName("Debe conservar el registro y permitir login al cargar otra vez el JSON")
+    public void testRegisterPersistsStudentForNextLogin(@TempDir Path tempDir) throws Exception {
+        String filePath = tempDir.resolve("students.json").toString();
+        String password = "Pass1234!";
+        EstudentController firstController =
+                new EstudentController(new EstudentJsonRepository(filePath));
+
+        Estudent registered = firstController.registerEstudent(
+                "nuevo_usuario", "nuevo@uptc.edu.co", password);
+
+        EstudentController restartedController =
+                new EstudentController(new EstudentJsonRepository(filePath));
+        Estudent authenticated = restartedController.joinEstudentAcount("nuevo_usuario", password);
+
+        assertEquals(registered.getId(), authenticated.getId());
+        assertEquals("nuevo@uptc.edu.co", authenticated.getEmail());
+        assertNotEquals(password, authenticated.getPassword());
+        assertTrue(securityService.verify(password, authenticated.getPassword()));
     }
 
     // =========================================================================

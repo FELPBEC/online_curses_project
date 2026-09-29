@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/13" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="co.edu.uptc.viewController.StudentDashboardController"
+           styleClass="fondo-cuaderno" stylesheets="@../styles/styles.css">
+    <children>
+        <VBox spacing="14" styleClass="student-dashboard">
+            <padding>
+                <Insets top="22" right="30" bottom="22" left="30"/>
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="%menu.brand" styleClass="auth-brand"/>
+                    <Label fx:id="lblWelcome" styleClass="auth-title"/>
+                    <Label text="%menu.subtitle" styleClass="auth-subtitle"/>
+                </VBox>
+                <VBox alignment="CENTER_RIGHT" spacing="8">
+                    <ComboBox fx:id="languageSelector" onAction="#onLanguageChanged"
+                              accessibleText="%common.language" styleClass="language-selector"/>
+                    <Label fx:id="lblCourseCount" styleClass="course-count"/>
+                </VBox>
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="btnCatalog" text="%catalog.available.title"
+                        onAction="#onShowCatalog" styleClass="boton-dibujado"/>
+                <Button fx:id="btnMyCourses" text="%catalog.myCourses.title"
+                        onAction="#onShowMyCourses" styleClass="boton-dibujado"/>
+                <Button fx:id="btnStatistics" text="%statistics.title" onAction="#onShowStatistics"
+                        styleClass="boton-dibujado"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Button text="%menu.logout" onAction="#onLogout"
+                        styleClass="boton-dibujado"/>
+                <Button text="%menu.exit" onAction="#onExit"
+                        styleClass="boton-dibujado"/>
+            </HBox>
+
+            <StackPane VBox.vgrow="ALWAYS">
+                <VBox fx:id="catalogView" spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label fx:id="lblCatalogTitle" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="txtCourseSearch" promptText="%catalog.search"
+                                   styleClass="auth-input" maxWidth="340"/>
+                    </HBox>
+                    <Label fx:id="lblEmptyCourses" text="%catalog.available.empty"
+                           wrapText="true" styleClass="auth-subtitle"/>
+                    <VBox fx:id="courseListHost" VBox.vgrow="ALWAYS"/>
+                </VBox>
+
+                <VBox fx:id="courseDetailView" visible="false" managed="false" spacing="12">
+                    <HBox alignment="CENTER_LEFT" spacing="14">
+                        <Button text="%catalog.back" onAction="#onBackToCourses"
+                                styleClass="boton-dibujado"/>
+                        <Label fx:id="lblSelectedCourseTitle" styleClass="section-title"
+                               HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="btnEnroll" text="%catalog.enroll"
+                                onAction="#onEnroll" styleClass="boton-dibujado"/>
+                    </HBox>
+                    <Label fx:id="lblSelectedCourseId" styleClass="course-count"/>
+                    <Label fx:id="lblSelectedCourseDescription" wrapText="true"
+                           styleClass="auth-subtitle"/>
+                    <Label fx:id="lblEnrollmentMessage" visible="false" managed="false"
+                           wrapText="true" styleClass="auth-message"/>
+                    <Label text="%catalog.tree.title" styleClass="section-title"/>
+                    <Label text="%catalog.tree.navigationHint" wrapText="true"
+                           styleClass="auth-hint"/>
+                    <HBox spacing="16" VBox.vgrow="ALWAYS">
+                        <StackPane fx:id="courseTreeHost" HBox.hgrow="ALWAYS"
+                                   styleClass="course-tree-panel"/>
+                        <VBox fx:id="nodeDetailsPanel" spacing="10" prefWidth="330" minWidth="300"
+                              styleClass="node-details-panel">
+                            <Label text="%catalog.node.details" styleClass="section-title"/>
+                            <Label fx:id="lblNodeTitle" text="%catalog.node.select"
+                                   wrapText="true" styleClass="node-title"/>
+                            <Label fx:id="lblNodeType" wrapText="true" styleClass="course-count"/>
+                            <Label fx:id="lblNodeDescription" wrapText="true"
+                                   styleClass="node-description"/>
+                            <Button fx:id="btnCompleteLesson" text="%catalog.lesson.complete"
+                                    visible="false" managed="false" onAction="#onCompleteLesson"
+                                    styleClass="boton-dibujado"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <VBox fx:id="statisticsView" visible="false" managed="false" spacing="16">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <Label text="%statistics.title" styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                        <Button text="%statistics.back" onAction="#onShowCatalog"
+                                styleClass="boton-dibujado"/>
+                    </HBox>
+                    <HBox spacing="14">
+                        <VBox spacing="6" styleClass="statistics-summary-card">
+                            <Label text="%statistics.enrolled" styleClass="auth-subtitle"/>
+                            <Label fx:id="lblStatisticsEnrolled" text="0" styleClass="statistics-value"/>
+                        </VBox>
+                        <VBox spacing="6" styleClass="statistics-summary-card">
+                            <Label text="%statistics.completed" styleClass="auth-subtitle"/>
+                            <Label fx:id="lblStatisticsCompleted" text="0" styleClass="statistics-value"/>
+                        </VBox>
+                        <VBox spacing="6" styleClass="statistics-summary-card">
+                            <Label text="%statistics.average" styleClass="auth-subtitle"/>
+                            <Label fx:id="lblStatisticsAverage" text="0%" styleClass="statistics-value"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="lblStatisticsEmpty" text="%statistics.empty"
+                           visible="false" managed="false" wrapText="true"
+                           styleClass="auth-subtitle"/>
+                    <HBox alignment="CENTER_LEFT" spacing="14">
+                        <Label fx:id="lblChartTitle" text="%statistics.courseProgress"
+                               styleClass="section-title" HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="btnToggleChart" onAction="#onToggleChart"
+                                styleClass="boton-dibujado"/>
+                    </HBox>
+                    <VBox spacing="8" VBox.vgrow="ALWAYS" styleClass="statistics-chart-card">
+                        <StackPane VBox.vgrow="ALWAYS">
+                            <BarChart fx:id="courseProgressChart" animated="false"
+                                      legendVisible="false">
+                                <xAxis>
+                                    <CategoryAxis/>
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis lowerBound="0" upperBound="100" tickUnit="20"
+                                                forceZeroInRange="true"/>
+                                </yAxis>
+                            </BarChart>
+                            <PieChart fx:id="courseCompletionChart" animated="false"
+                                      labelsVisible="false" legendVisible="true"/>
+                        </StackPane>
+                    </VBox>
+                </VBox>
+            </StackPane>
+        </VBox>
+    </children>
+</StackPane>

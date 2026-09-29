@@ -54,4 +54,24 @@ public class EstudentJsonRepositoryTest {
             Files.deleteIfExists(file);
         }
     }
+
+    @Test
+    @DisplayName("Debe conservar el progreso inicial al persistir la inscripción a un curso")
+    void shouldPersistCourseEnrollment() throws Exception {
+        Path file = Files.createTempFile("estudent-enrollment-test", ".json");
+
+        try {
+            EstudentJsonRepository repository = new EstudentJsonRepository(file.toString());
+            Estudent student = new Estudent(202, "ana", "ana@uptc.edu.co", "hash");
+            student.registerCourse("COURSE-1", "LESSON-1");
+            repository.saveAll(List.of(student));
+
+            Estudent loaded = repository.sendAll().get(0);
+
+            assertTrue(loaded.isRegisterOnCourse("COURSE-1"));
+            assertEquals("LESSON-1", loaded.getLessonOnCourse("COURSE-1"));
+        } finally {
+            Files.deleteIfExists(file);
+        }
+    }
 }

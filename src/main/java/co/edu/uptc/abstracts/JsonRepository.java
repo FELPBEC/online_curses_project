@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 import co.edu.uptc.exceptions.SavedFailureException;
 import co.edu.uptc.interfaces.Repository;
@@ -32,6 +33,10 @@ public abstract class JsonRepository<T> implements Repository<T>{
      * @param typeClass Tipo de dato o token reflejado para la deserialización.
      */
     public JsonRepository(String filePath, Type typeClass) {
+        this(filePath, typeClass, new GsonBuilder().setPrettyPrinting().create());
+    }
+
+    public JsonRepository(String filePath, Type typeClass, Gson gson) {
         File fileInput = new File(filePath);
 
         // Si la ruta recibida ya es absoluta (ej: rutas temporales de JUnit @TempDir)
@@ -41,16 +46,12 @@ public abstract class JsonRepository<T> implements Repository<T>{
             // Si es un nombre de archivo relativo (ej: "Courses.json"), se aloja en ../data
             String rutaDeEjecucion = System.getProperty("user.dir");
             File carpetaData = new File(rutaDeEjecucion, "../data");
-            
-            if (!carpetaData.exists()) {
-                carpetaData.mkdirs();
-            }
             File archivoFinal = new File(carpetaData, filePath);
             this.filePath = archivoFinal.getAbsolutePath();
         }
 
         this.typeClass = typeClass;
-        this.gson = new GsonBuilder().setPrettyPrinting().create();
+        this.gson = gson;
     }
     /**Método guardar todo que actualiza el archivo Json con la lista actual en memoria    
      * 
@@ -59,13 +60,18 @@ public abstract class JsonRepository<T> implements Repository<T>{
      */
     @Override
     public void saveAll(List<T> objectList) {
-        List<T> data= objectList;
-        try(FileWriter writer= new FileWriter(filePath)) {
-            gson.toJson(data, writer); 
-        } catch (IOException e) {
-            throw new SavedFailureException("ERROR al guardar en el archivo ", e);
+        File file = new File(filePath);
+        File parent = file.getParentFile();
+        if (parent != null && !parent.isDirectory() && !parent.mkdirs()) {
+            throw new SavedFailureException(
+                    "ERROR al crear la carpeta de persistencia " + parent.getAbsolutePath(),
+                    new IOException("No fue posible crear la carpeta de persistencia"));
         }
-        
+        try (FileWriter writer = new FileWriter(file)) {
+            gson.toJson(objectList, writer);
+        } catch (IOException e) {
+            throw new SavedFailureException("ERROR al guardar en el archivo " + filePath, e);
+        }
     }
 
     @Override
@@ -74,11 +80,11 @@ public abstract class JsonRepository<T> implements Repository<T>{
         if (!file.exists()) {
             return new ArrayList<>();
         }
-        try(FileReader reader= new FileReader(filePath)) {
-            List<T> data =gson.fromJson(reader,typeClass);
-            return  data !=null ?   data:  new ArrayList<>();
-        } catch (Exception e) {
-           return new  ArrayList<>();
+        try (FileReader reader = new FileReader(file)) {
+            List<T> data = gson.fromJson(reader, typeClass);
+            return data != null ? data : new ArrayList<>();
+        } catch (IOException | JsonParseException e) {
+            throw new SavedFailureException("ERROR al leer el archivo " + filePath, e);
         }
     }
     

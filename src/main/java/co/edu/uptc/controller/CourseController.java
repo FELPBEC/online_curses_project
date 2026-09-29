@@ -603,10 +603,10 @@ public class CourseController {
      * @return El porcentaje de completado del curso con base a las lecciones completadas.
      */
     public double getPercentOfLessonsComplete(String idCourse, String idLesson) {
-        int actualLesson = getActualPositionOfLesson(idCourse, idLesson) + 1;
+        int completedLessons = getActualPositionOfLesson(idCourse, idLesson);
         int lessonsTotal = getListOfLessonsInCourse(idCourse).size();
         if (lessonsTotal == 0) return 0.0;
-        return (100.0 * actualLesson) / lessonsTotal;
+        return (100.0 * completedLessons) / lessonsTotal;
     }
 
     /**
